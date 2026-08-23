@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Shared strings for the legacy flavor-based module (OnePlus 7 / 7T).
+        `app_name` is intentionally NOT here — each product flavor supplies its own.
+
+        AndroidManifest.xml references default_notification_channel_id for FCM, but no
+        strings.xml existed in src/main, so resource linking failed before this file was
+        added. Values match :core so notification channels stay consistent across apps.
+    -->
+    <string name="default_notification_channel_id">wallpaper_notifications</string>
+    <string name="default_notification_channel_name">Wallpaper Updates</string>
+    <string name="default_notification_channel_description">New wallpapers and app updates</string>
+
+    <string name="promo_notification_channel_id">promo_notifications</string>
+    <string name="promo_notification_channel_name">Offers</string>
+    <string name="promo_notification_channel_description">Occasional offers and premium deals</string>
+
+    <!-- UI strings shared with :core. The legacy module has its own copy of the
+         source tree, so it needs its own copy of these. Keep in sync with
+         core/src/main/res/values/strings.xml if you change them there. -->
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="both_screens">Both Screens</string>
+    <string name="cancel">Cancel</string>
+    <string name="check_connection_try_again" translatable="false">Please check your connection and try again</string>
+    <string name="depth_effect_description">Depth Effect wallpapers are specially designed to create a 3D effect when set as your lock screen. Follow these steps:</string>
+    <string name="depth_effect_note">Note: Depth Effect works best on %1$s series phones.</string>
+    <string name="depth_effect_tip">For optimal results, keep your screen clean and avoid using screen protectors that may interfere with the depth sensors.</string>
+    <string name="depth_effect_title">Depth Effect Instructions</string>
+    <string name="dismiss" translatable="false">Dismiss</string>
+    <string name="exclusive_wallpaper">Exclusive Wallpaper</string>
+    <string name="exclusive_wallpaper_description">This is an exclusive wallpaper designed by DroidAtes. Our exclusive wallpapers feature high-quality artwork with premium design elements specifically created for %1$s devices.</string>
+    <string name="external_system">External (System)</string>
+    <string name="feature_request_description_hint">Describe the feature or change you would like to see</string>
+    <string name="feature_request_submit_error">Failed to send your request. Please try again later.</string>
+    <string name="feature_request_submit_success">Thank you for your suggestion!</string>
+    <string name="feature_request_title">Feature Request</string>
+    <string name="feature_request_title_hint">Title</string>
+    <string name="got_it">Got it</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="no_ads">No Ads</string>
+    <string name="no_ads_description">Enjoy an ad-free experience</string>
+    <string name="no_internet" translatable="false">No internet connection</string>
+    <string name="no_internet_connection" translatable="false">No Internet Connection</string>
+    <string name="not_now">Not Now</string>
+    <string name="notification_permission_message">Stay updated with new wallpapers and exclusive offers by enabling notifications.</string>
+    <string name="notification_permission_title">Enable Notifications</string>
+    <string name="ok">OK</string>
+    <string name="premium_content">Premium Content</string>
+    <string name="premium_content_description">Access exclusive wallpapers and effects</string>
+    <string name="premium_feature_exclusive">This feature is exclusive to premium users. Get unlimited access to all premium content!</string>
+    <string name="premium_required">Premium Required</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="request_feature">Request a Feature</string>
+    <string name="request_feature_description">Request a feature or change in the app</string>
+    <string name="retry">Retry</string>
+    <string name="set_wallpaper_as">Set Wallpaper as</string>
+    <string name="setting_wallpaper_progress">Setting wallpaper... %1$d%%</string>
+    <string name="slow_internet_connection" translatable="false">Slow internet connection detected</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="sort_downloads">Most Loved</string>
+    <string name="sort_latest">Fresh Drops</string>
+    <string name="sort_launch_year">Release Date</string>
+    <string name="sort_views">Hottest Views</string>
+    <string name="sort_wallpapers">Sort Wallpapers</string>
+    <string name="source_information" translatable="false">Source: We strive to use only properly licensed wallpapers. If you believe this wallpaper is being used without proper permission, please let us know at droidates@gmail.com.</string>
+    <string name="source_information_followup" translatable="false">Once you send us an email, we\'ll investigate and take necessary action promptly. Thank you for helping us maintain a high-quality collection.</string>
+    <string name="submit">Submit</string>
+    <string name="tired_of_ads">Tired of Ads?</string>
+    <string name="try_again">Try Again</string>
+    <string name="unexpected_error">An unexpected error occurred. Please try again.</string>
+    <string name="upgrade_premium_message">Upgrade to Premium for an ad-free experience and unlock exclusive features</string>
+    <string name="upgrade_to_premium">Upgrade to Premium</string>
+    <string name="wallpaper_information">Wallpaper Information</string>
+    <string name="wallpaper_name">Name: %1$s</string>
+    <string name="wallpaper_option_help">Select where you want to apply this wallpaper.</string>
+    <string name="wallpaper_option_help_with_external">Select where you want to apply this wallpaper. \'External\' will open your system\'s wallpaper picker for more options.</string>
+    <string name="depth_effect_step1">1. Download and save the wallpaper or click \'Apply\' and then \'External\'.</string>
+    <string name="depth_effect_step2">2. Go to your phone\'s Settings > Wallpaper &amp; Style.</string>
+    <string name="depth_effect_step3">3. Select the wallpaper and set it as your Lock Screen.</string>
+    <string name="depth_effect_step4">4. Make sure the \'Depth Effect\' option is enabled during setup.</string>
+</resources>

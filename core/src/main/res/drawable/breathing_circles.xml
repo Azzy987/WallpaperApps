@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer breathing circle - larger, subtle -->
+    <item android:width="180dp"
+          android:height="180dp"  
+          android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#0D000000" />
+        </shape>
+    </item>
+    
+    <!-- Middle breathing circle -->
+    <item android:width="150dp"
+          android:height="150dp"
+          android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#1A000000" />
+        </shape>
+    </item>
+    
+    <!-- Inner breathing circle - most visible -->
+    <item android:width="130dp"
+          android:height="130dp"
+          android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#26FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

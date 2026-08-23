@@ -1,0 +1,161 @@
+<resources>
+
+    <string name="home_wallpapers_section_title">Official %1$s Drops</string>
+    <string name="series_filter_title">Filter Series</string>
+    <string name="series_filter_description">Select a series to filter wallpapers:</string>
+    <string name="series_filter_search_hint">Search series…</string>
+
+    <!-- Notification Channels -->
+    <string name="default_notification_channel_id">wallpaper_notifications</string>
+    <string name="default_notification_channel_name">Wallpaper Updates</string>
+    <string name="default_notification_channel_description">Receive updates about new wallpapers and features</string>
+    <string name="promo_notification_channel_id">promo_notifications</string>
+    <string name="promo_notification_channel_name">Promotions</string>
+    <string name="promo_notification_channel_description">Promotional notifications and special offers</string>
+    <string name="notification_channel_description">Receive updates about new wallpapers and features</string>
+
+    <!-- Notification Permission Dialog -->
+    <string name="notification_permission_title">Enable Notifications</string>
+    <string name="notification_permission_message">Stay updated with new wallpapers and exclusive offers by enabling notifications.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="later">Later</string>
+
+    <!-- Common Dialog Buttons -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit">Submit</string>
+    <string name="apply">Apply</string>
+    <string name="close">Close</string>
+    <string name="reset">Reset</string>
+    <string name="allow">Allow</string>
+    <string name="retry">Retry</string>
+    <string name="try_again">Try Again</string>
+    <string name="got_it">Got it</string>
+
+    <!-- Sign In Related -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_in_required">Sign In Required</string>
+    <string name="sign_in_to_save_favorites">Sign in to save your favorite wallpapers to your account</string>
+    <string name="sign_in_to_purchase">Please sign in to purchase premium subscription</string>
+    <string name="sign_out">Sign Out</string>
+
+    <!-- Premium/Upgrade Related -->
+    <string name="upgrade_to_premium">Upgrade to Premium</string>
+    <string name="not_now">Not Now</string>
+    <string name="unlock_now">Unlock Now</string>
+    <string name="request_cancellation">Request Cancellation</string>
+    <string name="promo_code">Promo Code</string>
+    <string name="premium_required">Premium Required</string>
+    <string name="premium_feature_exclusive">This feature is exclusive to premium users. Get unlimited access to all premium content!</string>
+
+    <!-- Toast Messages -->
+    <string name="preparing_wallpaper">Preparing wallpaper…</string>
+    <string name="opening_wallpaper_picker">Opening system wallpaper picker…</string>
+    <string name="setting_wallpaper">Setting wallpaper…</string>
+    <string name="loading_wallpaper">Loading wallpaper…</string>
+    <string name="starting_download">Starting download…</string>
+    <string name="preparing_to_share">Preparing to share…</string>
+    <string name="opening_editor">Opening editor…</string>
+    <string name="no_email_app">No email app found</string>
+    <string name="downloading_wallpaper">Downloading wallpaper…</string>
+    <string name="wallpaper_saved">Wallpaper saved to gallery</string>
+    <string name="wallpaper_set_home">Wallpaper set as home screen</string>
+    <string name="clearing_cache">Clearing cache…</string>
+    <string name="cache_cleared">Cache cleared successfully</string>
+    <string name="cache_clear_failed">Failed to clear cache</string>
+    <string name="syncing_favorites">Syncing favorites…</string>
+    <string name="signin_required_for_sync">You need to be signed in to sync favorites</string>
+    <string name="favorites_synced">Favorites synced successfully</string>
+    <string name="favorites_sync_error">Error syncing favorites</string>
+    <string name="image_load_failed">Failed to load image</string>
+    <string name="image_download_failed">Failed to download image</string>
+    <string name="error_updating_favorites">Error updating favorites</string>
+
+    <!-- Sort Dialog -->
+    <string name="sort_wallpapers">Sort Wallpapers</string>
+    <string name="sort_latest">Fresh Drops</string>
+    <string name="sort_views">Hottest Views</string>
+    <string name="sort_downloads">Most Loved</string>
+    <string name="sort_launch_year">Release Date</string>
+
+    <!-- Depth Effect Instructions -->
+    <string name="depth_effect_title">Depth Effect Instructions</string>
+    <string name="depth_effect_description">Depth Effect wallpapers are specially designed to create a 3D effect when set as your lock screen. Follow these steps:</string>
+    <string name="depth_effect_step1">1. Download and save the wallpaper or click \'Apply\' and then \'External\'.</string>
+    <string name="depth_effect_step2">2. Go to your phone\'s Settings > Wallpaper &amp; Style.</string>
+    <string name="depth_effect_step3">3. Select the wallpaper and set it as your Lock Screen.</string>
+    <string name="depth_effect_step4">4. Make sure the \'Depth Effect\' option is enabled during setup.</string>
+    <string name="depth_effect_note">Note: Depth Effect works best on %1$s series phones.</string>
+    <string name="depth_effect_tip">For optimal results, keep your screen clean and avoid using screen protectors that may interfere with the depth sensors.</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Settings</string>
+    <string name="choose_theme">Choose Theme</string>
+
+    <!-- Help Screen -->
+    <string name="help">Help</string>
+
+    <!-- Feedback Dialog -->
+    <string name="feedback_hint">Your feedback (optional)</string>
+
+    <!-- Update Dialog -->
+    <string name="update_now">Update Now</string>
+    <string name="mandatory_update">Mandatory Update</string>
+    <string name="update_available">Update Available</string>
+    <string name="update_message_default">A new version of the app is available. Please update to enjoy the latest features and improvements.</string>
+
+    <!-- Wallpaper Information Dialog -->
+    <string name="wallpaper_information">Wallpaper Information</string>
+    <string name="wallpaper_name">Name: %1$s</string>
+    <string name="exclusive_wallpaper">Exclusive Wallpaper</string>
+    <string name="exclusive_wallpaper_description">This is an exclusive wallpaper designed by DroidAtes. Our exclusive wallpapers feature high-quality artwork with premium design elements specifically created for %1$s devices.</string>
+    <string name="source_information" translatable="false">Source: We strive to use only properly licensed wallpapers. If you believe this wallpaper is being used without proper permission, please let us know at droidates@gmail.com.</string>
+    <string name="source_information_followup" translatable="false">Once you send us an email, we\'ll investigate and take necessary action promptly. Thank you for helping us maintain a high-quality collection.</string>
+
+    <!-- Wallpaper Card Labels -->
+    <string name="exclusive_label">EXCLUSIVE</string>
+    <string name="depth_label">DEPTH</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+
+    <!-- SetWallpaperBottomSheet -->
+    <string name="set_wallpaper_as">Set Wallpaper as</string>
+    <string name="setting_wallpaper_progress">Setting wallpaper... %1$d%%</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="both_screens">Both Screens</string>
+    <string name="external_system">External (System)</string>
+    <string name="wallpaper_option_help_with_external">Select where you want to apply this wallpaper. \'External\' will open your system\'s wallpaper picker for more options.</string>
+    <string name="wallpaper_option_help">Select where you want to apply this wallpaper.</string>
+
+    <!-- UpgradePromptDialog -->
+    <string name="tired_of_ads">Tired of Ads?</string>
+    <string name="upgrade_premium_message">Upgrade to Premium for an ad-free experience and unlock exclusive features</string>
+    <string name="no_ads">No Ads</string>
+    <string name="no_ads_description">Enjoy an ad-free experience</string>
+    <string name="premium_content">Premium Content</string>
+    <string name="premium_content_description">Access exclusive wallpapers and effects</string>
+
+    <!-- Network Status Related -->
+    <string name="no_internet_connection" translatable="false">No Internet Connection</string>
+    <string name="check_connection_try_again" translatable="false">Please check your connection and try again</string>
+    <string name="slow_internet_connection" translatable="false">Slow internet connection detected</string>
+    <string name="no_internet" translatable="false">No internet connection</string>
+    <string name="slow_internet" translatable="false">Slow internet connection</string>
+    <string name="dismiss" translatable="false">Dismiss</string>
+
+    <!-- Error Messages -->
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="unexpected_error">An unexpected error occurred. Please try again.</string>
+
+    <!-- Feature Request Dialog -->
+    <string name="request_feature">Request a Feature</string>
+    <string name="request_feature_description">Request a feature or change in the app</string>
+    <string name="feature_request_title">Feature Request</string>
+    <string name="feature_request_title_hint">Title</string>
+    <string name="feature_request_description_hint">Describe the feature or change you would like to see</string>
+    <string name="feature_request_empty_fields">Please fill in all fields</string>
+    <string name="feature_request_submit_success">Thank you for your suggestion!</string>
+    <string name="feature_request_submit_error">Failed to send your request. Please try again later.</string>
+</resources>

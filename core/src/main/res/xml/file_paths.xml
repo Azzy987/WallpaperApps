@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Covers every app's Pictures/<DOWNLOAD_FOLDER_NAME>/ directory. Must not be
+         pinned to one app's folder or sharing breaks in the others. -->
+    <external-path name="external_files" path="Pictures/" />
+    <cache-path name="cache_files" path="." />
+</paths>

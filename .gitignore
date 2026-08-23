@@ -1,0 +1,30 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+build/
+.kotlin/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Signing — never commit keystores or their passwords
+keystore.properties
+*.jks
+*.keystore
+
+# google-services.json is shared from the project root; the per-module copies are
+# generated at build time by each module's build.gradle.kts.
+/*/google-services.json
+
+# Release build artifacts (AAB/APK) — outputs, not source.
+release/
+*.aab
+*.apk

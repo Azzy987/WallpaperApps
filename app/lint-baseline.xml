@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.12.2" type="baseline" client="gradle" dependencies="false" name="AGP (8.12.2)" variant="fatal" version="8.12.2">
+
+    <issue
+        id="RemoveWorkManagerInitializer"
+        message="Remove androidx.work.WorkManagerInitializer from your AndroidManifest.xml when using on-demand initialization."
+        errorLine1="        &lt;provider android:name=&quot;androidx.startup.InitializationProvider&quot; android:authorities=&quot;${applicationId}.androidx-startup&quot; android:exported=&quot;false&quot; tools:node=&quot;merge&quot;>"
+        errorLine2="        ^">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="56"
+            column="9"/>
+    </issue>
+
+</issues>

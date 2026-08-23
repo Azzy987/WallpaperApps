@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Shared by every wallpaper app. Per-app manifests only declare the
+         <application> element, the AdMob APPLICATION_ID and the launcher activity. -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Legacy storage only (API <= 32). On Android 10+ downloads go through MediaStore,
+         which needs no permission to create files or to read back the app's OWN entries.
+
+         READ_MEDIA_IMAGES / READ_MEDIA_VISUAL_USER_SELECTED are deliberately NOT declared:
+         Play's Photo and Video Permissions policy only allows them when a system picker
+         can't do the job, and this app never browses the user's gallery — it only writes
+         wallpapers it downloaded and looks them up again by name. Re-adding either one
+         will get the release rejected. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <application>
+
+        <!-- Enable 120Hz support on OnePlus/OPlus devices -->
+        <meta-data android:name="oplus.software.display.supported_modes" android:value="120,90,60" />
+
+        <!-- NOTE: the GMA OPTIMIZE_INITIALIZATION / OPTIMIZE_AD_LOADING meta-data flags were
+             removed with the Next-Gen SDK migration — that SDK already does its init and ad
+             loading off the main thread, and the flags belonged to play-services-ads. We
+             still initialize from a worker (MobileAdsInitializer) to keep startup clear. -->
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Custom WorkManager configuration is provided in code, so disable the default initializer -->
+        <provider android:name="androidx.startup.InitializationProvider" android:authorities="${applicationId}.androidx-startup" android:exported="false" tools:node="merge">
+            <meta-data android:name="androidx.work.WorkManagerInitializer" android:value="androidx.startup" tools:node="remove" />
+            <meta-data android:name="com.droidates.wallpapers.core.utils.FirebaseInitializer" android:value="androidx.startup" />
+        </provider>
+    </application>
+
+</manifest>

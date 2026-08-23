@@ -1,0 +1,514 @@
+{
+  "project_info": {
+    "project_number": "352408897001",
+    "project_id": "wallpaper-apps-cad2c",
+    "storage_bucket": "wallpaper-apps-cad2c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:e4aa2a039b359fa9d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.ios27wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-8eboafr8siq59d74991tu0r3e92d7976.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.ios27wallpapers",
+            "certificate_hash": "0f10dc8cc99a9785def596a458e7ba96591bd8a2"
+          }
+        },
+        {
+          "client_id": "352408897001-h3dupi43t0jpmb8g7hm6hk7qps33dt82.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.ios27wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:c5228b8f96b2222fd1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.iphone17wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-3g48qceh3ta4q709mukjf7qc29butk4j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.iphone17wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-qhrcvmt6o9iiq8l6plak2enqujhd04g9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.iphone17wallpapers",
+            "certificate_hash": "887e918e533ee554da4596323bb579b37ea78678"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:7861bb7292aee731d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.iphone18wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:0b5a90a020cab76bd1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.oneplus15wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-seqrs0ers6ohvtsp1kp4phf9fh4gt06n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.oneplus15wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-vjrjbcv33pf6026os43kd3eqor1hq4rg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.oneplus15wallpapers",
+            "certificate_hash": "ee510a7b5e67d56063e41a9da7c39e14685d0afb"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:3fd9817e5c851046d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.oneplus7Wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-6ln9l29ri4dq6bfc7ss9ppn50toggdj3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.oneplus7Wallpapers",
+            "certificate_hash": "62025aaa96a018f298164cc6875181ef01bf38f7"
+          }
+        },
+        {
+          "client_id": "352408897001-aqbqalec7s1olnelhof9rlakfn690q3g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.oneplus7Wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:20868dd9d7a2838cd1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.pixel11wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-17k7g0tl2tct2vellrsafur982n3n5l7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.pixel11wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-t8eci3rt4s4gbvnaal9p159si54fbc84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.pixel11wallpapers",
+            "certificate_hash": "7ca8155431f4da0a1973507e56228e1f3c32a574"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:71e859946d37b659d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.s25ultrawallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-aqdd14qv90kdl5o3i6sd2h9ctff16lpq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.s25ultrawallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-um6oc94e25qnmeajlgu2q9qi2p4find1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.s25ultrawallpapers",
+            "certificate_hash": "55b7f69792eeb03b487a74f7630088836d259e68"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:0692a98efc4b6b7cd1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.s26ultrawallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-43lb0gu1h96gcemo64mebr0qkj9tfvcl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.s26ultrawallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-ql4egve1dspmuv9mlecrfke94npkv3ph.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.s26ultrawallpapers",
+            "certificate_hash": "c8bffe8dc5dfa174d2ddaa3031e27520bc811ea3"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:9d8c32a694689866d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.samsungfold8wallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-3momsikcic8105l3bf4ek5gri0554r23.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.samsungfold8wallpapers",
+            "certificate_hash": "733818ce311467f9749763d8cccc9cd89ee95bfd"
+          }
+        },
+        {
+          "client_id": "352408897001-ifn0iul2212e9s67eqalplkckgiii8ub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.samsungfold8wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352408897001:android:45135aa08ea92369d1f778",
+        "android_client_info": {
+          "package_name": "com.droidates.xiaomi17ultrawallpapers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352408897001-920a8b4geiqq55u795uv6fforjoflit9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.xiaomi17ultrawallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
+        {
+          "client_id": "352408897001-bhkfg4jt9g03sd5d458aqjb7d9b9j1jk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.xiaomi17ultrawallpapers",
+            "certificate_hash": "4ba9578ce783f3a910613d2419c1642af6620f6b"
+          }
+        },
+        {
+          "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDG-VunGhw8OBvjr4sTMnU9Kaaan02grw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "352408897001-2tu6mi63ub2f4dmvnveg0tdmf4b3j1k4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.droidates.S25UltraWallpapers"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

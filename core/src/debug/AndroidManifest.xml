@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Debug-only additions. Keeping <profileable> out of the release manifest means
+         shipped builds can't be profiled over shell by anyone with the device. -->
+    <application>
+        <profileable android:shell="true" tools:targetApi="q" />
+    </application>
+
+</manifest>
