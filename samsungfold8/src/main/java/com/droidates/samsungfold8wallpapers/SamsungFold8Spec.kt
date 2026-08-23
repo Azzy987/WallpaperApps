@@ -47,8 +47,8 @@ object SamsungFold8Spec : AppSpec {
     // Must match the product id already live in Play, or existing premium users
     // fail to restore.
     override val billingLifetimeId = "samsungfold8lifetime"
-    override val billingLifetimeFallbackPrice = "₹299"
-    override val billingLifetimeComparePrice = "₹399"
+    override val billingLifetimeFallbackPrice = "₹199"
+    override val billingLifetimeComparePrice = "₹299"
 
     // Live AdMob ids from the standalone project.
     override val adMobAppId = "ca-app-pub-6427410984085546~4654247213"

@@ -49,8 +49,8 @@ object IPhone18Spec : AppSpec {
 
     // ── Monetisation ────────────────────────────────────────────────────────
     override val billingLifetimeId = "iphone18lifetime"
-    override val billingLifetimeFallbackPrice = "₹299"
-    override val billingLifetimeComparePrice = "₹399"
+    override val billingLifetimeFallbackPrice = "₹199"
+    override val billingLifetimeComparePrice = "₹299"
 
     // TODO(iphone18): replace with the real unit IDs from a NEW AdMob app, and
     //  update the App ID in this module's AndroidManifest.xml. These are Google's
