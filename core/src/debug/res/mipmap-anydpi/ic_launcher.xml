@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Placeholder launcher icon, debug source set only.
+
+  :core references @mipmap/ic_launcher from splash_icon_animated.xml. Real app
+  modules supply that icon at manifest-merge time, so the library and every
+  released app resolve it correctly.
+
+  The androidTest APK, however, is its own application (…core.test) and has no
+  app module behind it, so AAPT failed to link that reference and
+  :core:assembleDebugAndroidTest could not build. This placeholder gives the
+  test APK something to resolve.
+
+  It lives in src/debug so it can never ship: release builds of :core, and every
+  app module in any build type, keep using the app's own launcher icon.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@color/ic_launcher_background" />
+</adaptive-icon>
