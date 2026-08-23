@@ -81,6 +81,7 @@ import com.droidates.wallpapers.core.data.preferences.LocalUserPreferences
 import com.droidates.wallpapers.core.navigation.NavigationState
 import com.droidates.wallpapers.core.ui.components.*
 import com.droidates.wallpapers.core.ui.components.detail.WallpaperPreview
+import com.droidates.wallpapers.core.ui.components.detail.RollingCounterText
 import com.droidates.wallpapers.core.model.Wallpaper
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
@@ -2293,22 +2294,20 @@ private fun AnimatedCounterStatItem(
             modifier = Modifier.size(22.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        AnimatedContent(
-            targetState = count,
-            transitionSpec = {
-                (slideInVertically { fullHeight -> fullHeight } + fadeIn())
-                    .togetherWith(slideOutVertically { fullHeight -> -fullHeight } + fadeOut())
-            },
-            label = "counter_flip"
-        ) { animatedCount ->
-            Text(
-                text = "$animatedCount $label",
-                color = Color.White,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        // Only the digits roll; the label stays put so the row does not shift.
+        RollingCounterText(
+            count = count,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = label,
+            color = Color.White,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

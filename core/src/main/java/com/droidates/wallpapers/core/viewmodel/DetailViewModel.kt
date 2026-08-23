@@ -195,7 +195,9 @@ class DetailViewModel @Inject constructor(
      * Increments the downloads count for a wallpaper in Firebase
      */
     fun incrementDownloads(source: String, wallpaperId: String) {
-        _localDownloads.value = _localDownloads.value?.plus(1)
+        // Fall back to the loaded wallpaper's count: if the local counter has not been
+        // seeded yet, ?.plus(1) would leave it null and the increment would never show.
+        _localDownloads.value = (_localDownloads.value ?: _wallpaper.value?.downloads ?: 0) + 1
         incrementCounter(source, wallpaperId, "downloads", "Downloads")
     }
 
@@ -997,7 +999,8 @@ class DetailViewModel @Inject constructor(
                     if (success) {
                         Log.d("DetailViewModel", "Wallpaper set successfully")
                         withContext(Dispatchers.Main) {
-                            _localDownloads.value = (_localDownloads.value ?: 0) + 1
+                            // incrementDownloads() already bumps _localDownloads; doing it
+                            // here as well made the visible counter jump by 2 per download.
                             incrementDownloads(sourceScreen, wallpaper.id)
                             onComplete() // Show ad after successful wallpaper set
                         }

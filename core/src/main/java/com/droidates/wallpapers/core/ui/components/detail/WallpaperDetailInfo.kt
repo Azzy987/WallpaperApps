@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -31,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.droidates.wallpapers.core.model.Wallpaper
-import com.droidates.wallpapers.core.utils.StatFormatter
 
 /**
  * A component that displays detailed information about a wallpaper.
@@ -110,9 +110,10 @@ fun WallpaperDetailInfo(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatItem(
+                RollingStatItem(
                     icon = Icons.Outlined.Info,
-                    value = "${StatFormatter.formatStatValue(wallpaper.downloads)} downloads",
+                    count = wallpaper.downloads,
+                    label = "downloads",
                     iconColor = MaterialTheme.colorScheme.primary
                 )
                 StatItem(
@@ -133,9 +134,10 @@ fun WallpaperDetailInfo(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                StatItem(
+                RollingStatItem(
                     icon = Icons.Rounded.RemoveRedEye,
-                    value = "${StatFormatter.formatStatValue(wallpaper.views)} views",
+                    count = wallpaper.views,
+                    label = "views",
                     iconColor = MaterialTheme.colorScheme.primary
                 )
                 StatItem(
@@ -179,4 +181,43 @@ fun WallpaperBadge(
             )
         }
     }
-} 
+}
+
+/**
+ * [StatItem] whose numeric part rolls per digit when the count changes.
+ * Label is rendered separately so it never slides with the digits.
+ */
+@Composable
+private fun RollingStatItem(
+    icon: ImageVector,
+    count: Int,
+    label: String,
+    iconColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        RollingCounterText(
+            count = count,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
