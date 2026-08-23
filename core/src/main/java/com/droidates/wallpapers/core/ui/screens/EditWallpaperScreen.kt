@@ -63,6 +63,8 @@ fun EditWallpaperScreen(
     // Get premium status from AdManager
     val isPremiumUser by adManager.isPremiumUser.collectAsState()
     
+    val userPreferences = LocalUserPreferences.current
+
     // Check if this wallpaper is already unlocked in DetailViewModel or UserPreferences
     var hasWatchedAd by remember { mutableStateOf(false) }
     
@@ -76,8 +78,11 @@ fun EditWallpaperScreen(
             hasWatchedAd = true
             Log.d("EditWallpaperScreen", "User is premium, all filters unlocked")
         } else if (wallpaper?.exclusive == true) {
-            // For non-premium users with exclusive wallpaper, check if unlocked
-            hasWatchedAd = detailViewModel.isWallpaperUnlocked(wallpaperId)
+            // Persisted unlock first, then the in-memory session set — the comment above
+            // always claimed both were checked, but only the session one ever was, so a
+            // rewarded unlock vanished when the app was killed.
+            hasWatchedAd = userPreferences.isWallpaperUnlocked(wallpaperId) ||
+                detailViewModel.isWallpaperUnlocked(wallpaperId)
             Log.d("EditWallpaperScreen", "Non-premium user with exclusive wallpaper, filters unlocked based on hasWatchedAd: $hasWatchedAd")
         } else {
             // For non-exclusive wallpapers, check if edit features unlocked in this session

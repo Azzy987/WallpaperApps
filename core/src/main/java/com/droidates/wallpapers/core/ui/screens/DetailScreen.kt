@@ -414,9 +414,19 @@ fun DetailScreen(
             hasWatchedAd = true
             debugLog { "Premium user - content is unlocked" }
         } else if (wallpaper?.exclusive == true) {
-            // For regular users, check if this specific wallpaper is unlocked in this session only
-            hasWatchedAd = viewModel.isWallpaperUnlocked(wallpaperId)
-            debugLog { "Regular user exclusive unlock in session: $hasWatchedAd" }
+            // Unlocks are written to DataStore by addUnlockedWallpaper() but used to be
+            // read back only from DetailViewModel's in-memory set, which lives in a
+            // companion object behind a 2-minute window. So a user who watched a full
+            // rewarded ad lost the unlock as soon as the app was killed — or after two
+            // minutes of reading — and was asked to watch another ad for content they
+            // had already paid for with their attention.
+            //
+            // Check the persisted set first and fall back to the in-memory one, which
+            // still covers the moments between the reward callback and the DataStore
+            // write landing.
+            hasWatchedAd = userPreferences.isWallpaperUnlocked(wallpaperId) ||
+                viewModel.isWallpaperUnlocked(wallpaperId)
+            debugLog { "Regular user exclusive unlock (persisted or session): $hasWatchedAd" }
         } else {
             // Non-exclusive content is always available
             hasWatchedAd = true
