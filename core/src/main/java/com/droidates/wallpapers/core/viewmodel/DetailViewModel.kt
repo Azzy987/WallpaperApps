@@ -104,6 +104,14 @@ class DetailViewModel @Inject constructor(
     private val _isDownloading = MutableStateFlow(false)
     val isDownloading = _isDownloading.asStateFlow()
 
+    /**
+     * Bumped once per successful download. The detail screen watches this to show a
+     * confirmation checkmark; a counter rather than a Boolean so two downloads in a
+     * row are two distinct events and the second still animates.
+     */
+    private val _downloadSuccessCount = MutableStateFlow(0)
+    val downloadSuccessCount = _downloadSuccessCount.asStateFlow()
+
     private val _isDownloaded = MutableStateFlow(false)
     val isDownloaded = _isDownloaded.asStateFlow()
 
@@ -198,6 +206,7 @@ class DetailViewModel @Inject constructor(
         // Fall back to the loaded wallpaper's count: if the local counter has not been
         // seeded yet, ?.plus(1) would leave it null and the increment would never show.
         _localDownloads.value = (_localDownloads.value ?: _wallpaper.value?.downloads ?: 0) + 1
+        _downloadSuccessCount.value++
         incrementCounter(source, wallpaperId, "downloads", "Downloads")
     }
 

@@ -1,5 +1,6 @@
 package com.droidates.wallpapers.core.ui.components
 
+import com.droidates.wallpapers.core.ui.components.detail.rememberFavoriteBounce
 import com.droidates.wallpapers.core.config.AppConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -115,31 +116,12 @@ fun FastWallpaperCard(
     // State for long press preview dialog
     var showPreviewDialog by remember { mutableStateOf(false) }
     
-    // Animation states for favorite button - only animate on explicit interaction
-    var favoriteScale by remember { mutableStateOf(1f) }
-    var triggerFavoriteAnimation by remember { mutableStateOf(false) }
-
-    // PERF: Use snap (no interpolation) when not actively animating to avoid
-    // per-card ValueAnimator instances running during scroll
-    val animatedFavoriteScale by animateFloatAsState(
-        targetValue = favoriteScale,
-        animationSpec = if (triggerFavoriteAnimation) Material3Motion.buttonPressSpec() else snap(),
-        label = "favoriteScale"
-    )
+    // Favorite pop. The Animatable is idle unless pop() is called, so this keeps the
+    // property that mattered here before: no per-card animator ticking during scroll.
+    val favoriteBounce = rememberFavoriteBounce()
 
     // PERF: Color is a simple conditional, no animation needed during scroll
     val favoriteColor = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
-
-    // Reset scale after animation
-    LaunchedEffect(triggerFavoriteAnimation) {
-        if (triggerFavoriteAnimation) {
-            favoriteScale = 1.2f
-            kotlinx.coroutines.delay(150)
-            favoriteScale = 1f
-            kotlinx.coroutines.delay(150)
-            triggerFavoriteAnimation = false
-        }
-    }
     
     val wallpaperName = wallpaper.wallpaperName
     val isExclusive = wallpaper.exclusive
@@ -301,8 +283,8 @@ fun FastWallpaperCard(
                             else HapticFeedbackConstants.VIRTUAL_KEY
                         )
                         
-                        // Trigger animation
-                        triggerFavoriteAnimation = true
+                        // Trigger the pop
+                        favoriteBounce.pop()
                         
                         // Toggle favorite
                         onFavoriteToggle?.invoke(wallpaper) ?: favoritesViewModel.toggleFavorite(wallpaper)
@@ -311,7 +293,7 @@ fun FastWallpaperCard(
                         .size(20.dp)
                         .graphicsLayer {
                             // CRASH FIX: Protect against NaN values in animations
-                            val safeScale = animatedFavoriteScale.toSafeScale(min = 0.5f, max = 1.5f)
+                            val safeScale = favoriteBounce.scale.toSafeScale(min = 0.5f, max = 1.5f)
                             scaleX = safeScale
                             scaleY = safeScale
                         },

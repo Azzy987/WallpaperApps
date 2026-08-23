@@ -81,6 +81,9 @@ import com.droidates.wallpapers.core.data.preferences.LocalUserPreferences
 import com.droidates.wallpapers.core.navigation.NavigationState
 import com.droidates.wallpapers.core.ui.components.*
 import com.droidates.wallpapers.core.ui.components.detail.WallpaperPreview
+import com.droidates.wallpapers.core.ui.components.detail.ActionPhase
+import com.droidates.wallpapers.core.ui.components.detail.ActionButtonContent
+import com.droidates.wallpapers.core.ui.components.detail.rememberFavoriteBounce
 import com.droidates.wallpapers.core.ui.components.detail.RollingCounterText
 import com.droidates.wallpapers.core.model.Wallpaper
 import androidx.compose.foundation.layout.Box
@@ -177,20 +180,9 @@ fun DetailScreen(
     val view = LocalView.current
     // RemoteConfig removed as part of remote config cleanup
     
-    // Animation states for favorite button
-    var favoriteScale by remember { mutableStateOf(1f) }
-    var triggerFavoriteAnimation by remember { mutableStateOf(false) }
-    
-    // Reset scale after animation
-    LaunchedEffect(triggerFavoriteAnimation) {
-        if (triggerFavoriteAnimation) {
-            favoriteScale = 1.2f
-            kotlinx.coroutines.delay(150)
-            favoriteScale = 1f
-            kotlinx.coroutines.delay(150)
-            triggerFavoriteAnimation = false
-        }
-    }
+    // Favorite button pop. Spring-driven, so a rapid second tap retargets the same
+    // animation instead of being swallowed by a fixed 300ms timer.
+    val favoriteBounce = rememberFavoriteBounce()
 
     // Network utilities for checking connection status
     val networkUtils = LocalNetworkUtils.current
@@ -324,16 +316,7 @@ fun DetailScreen(
     val wallpaper by viewModel.wallpaper.collectAsState()
     // PERF FIX: Removed duplicate `currentWallpaper` collector — use `wallpaper` everywhere
     
-    // Animated favorite button properties
-    val animatedFavoriteScale by animateFloatAsState(
-        targetValue = favoriteScale,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessHigh
-        ),
-        label = "favoriteScale"
-    )
-    
+    // Animated favorite button colour (scale now comes from favoriteBounce).
     val animatedFavoriteColor by animateColorAsState(
         targetValue = if (wallpaper?.isFavorite == true) Color.Red else Color.White,
         animationSpec = tween(durationMillis = 300, easing = EaseOutCubic),
@@ -907,6 +890,33 @@ fun DetailScreen(
 
     // Track metadata loading state in a way that prevents UI flickering
     val localDownloads by viewModel.localDownloads.collectAsState()
+
+    // Download button phase: spinner while in flight, then a checkmark once the
+    // download actually succeeded. Keyed off a counter so a second download in the
+    // same session still flashes confirmation.
+    // NOTE: the viewmodel increments the success counter *before* it clears
+    // isDownloading, so these must be resolved in one effect — handling them
+    // separately let the isDownloading transition overwrite Done and eat the
+    // checkmark.
+    val downloadSuccessCount by viewModel.downloadSuccessCount.collectAsState()
+    var downloadPhase by remember { mutableStateOf(ActionPhase.Idle) }
+    var pendingSuccess by remember { mutableStateOf(false) }
+    LaunchedEffect(downloadSuccessCount) {
+        if (downloadSuccessCount > 0) pendingSuccess = true
+    }
+    LaunchedEffect(isDownloading, pendingSuccess) {
+        downloadPhase = when {
+            // Success outranks the in-flight flag, whichever order they arrive in.
+            pendingSuccess -> ActionPhase.Done
+            isDownloading -> ActionPhase.Working
+            else -> ActionPhase.Idle
+        }
+        if (pendingSuccess) {
+            kotlinx.coroutines.delay(1200)
+            pendingSuccess = false
+            downloadPhase = if (isDownloading) ActionPhase.Working else ActionPhase.Idle
+        }
+    }
     val localViews by viewModel.localViews.collectAsState()
 
     // REMOVED: This was causing progress indicator to disappear before image loads
@@ -1712,7 +1722,7 @@ fun DetailScreen(
                                                         label = "download",
                                                         testTag = "detail_action_download",
                                                         onClick = { handleDownloadClick() },
-                                                        isLoading = isDownloading && !isSettingWallpaper && !isSharing
+                                                        phase = downloadPhase
                                                     )
                                                     ActionButton(
                                                         icon = if (currentWallpaper.isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
@@ -1725,14 +1735,14 @@ fun DetailScreen(
                                                                 else HapticFeedbackConstants.KEYBOARD_TAP
                                                             )
                                                             
-                                                            // Trigger animation
-                                                            triggerFavoriteAnimation = true
+                                                            // Trigger the pop
+                                                            favoriteBounce.pop()
                                                             
                                                             // Toggle favorite
                                                             viewModel.toggleFavorite()
                                                         },
                                                         tint = animatedFavoriteColor,
-                                                        scale = animatedFavoriteScale
+                                                        scale = favoriteBounce.scale
                                                     )
                                                     ActionButton(
                                                         icon = Icons.Rounded.FormatPaint,
@@ -2322,7 +2332,9 @@ private fun ActionButton(
     modifier: Modifier = Modifier,
     tint: Color = Color.White,
     isLoading: Boolean = false,
-    scale: Float = 1f
+    scale: Float = 1f,
+    /** Set to [ActionPhase.Done] to flash a confirmation checkmark. */
+    phase: ActionPhase? = null
 ) {
     val actionModifier = if (testTag != null) modifier.testTag(testTag) else modifier
     Surface(
@@ -2343,19 +2355,12 @@ private fun ActionButton(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (isLoading) {
-LoadingIndicator(
-                    modifier = Modifier.size(22.dp), // COMPACT: Smaller loading indicator
-                    color = Color.White
-                )
-            } else {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = tint,
-                    modifier = Modifier.size(22.dp) // COMPACT: Smaller icon size
-                )
-            }
+            ActionButtonContent(
+                icon = icon,
+                label = label,
+                phase = phase ?: if (isLoading) ActionPhase.Working else ActionPhase.Idle,
+                tint = tint
+            )
         }
     }
 }
