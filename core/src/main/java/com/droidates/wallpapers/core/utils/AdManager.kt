@@ -41,6 +41,10 @@ class AdManager @Inject constructor(
 ) {
     companion object {
         private const val TAG = "AdManager"
+
+        /** Default length of the ad-free window earned by watching a rewarded ad. */
+        const val AD_FREE_WINDOW_MS = 30 * 60 * 1000L // 30 minutes
+        private const val KEY_AD_FREE_UNTIL = "ad_free_until"
         
         // Use production ads only - IDs defined in AppConfig
         // Resolved from the installed AppSpec at call time, so no longer `const`.
@@ -135,6 +139,46 @@ class AdManager @Inject constructor(
     // Callback for when interstitial ad is dismissed
     private var interstitialAdDismissCallback: (() -> Unit)? = null
     private var lastInterstitialCallbackUptimeMs: Long = 0L
+
+    // ── Ad-free window (earned by watching a rewarded ad) ───────────────────
+    // Persisted, because a window the user paid attention for must survive the app
+    // being backgrounded or killed — losing it is exactly the broken trade that
+    // makes people stop watching rewarded ads at all.
+    private val adFreePrefs by lazy {
+        // init{} is intentionally free of startup work, so the stored window is read
+        // here on first access rather than during construction.
+        context.getSharedPreferences("ad_manager_prefs", Context.MODE_PRIVATE).also { prefs ->
+            _adFreeUntil.value = prefs.getLong(KEY_AD_FREE_UNTIL, 0L)
+        }
+    }
+    private val _adFreeUntil = MutableStateFlow(0L)
+    /** Epoch millis until which interstitials are suppressed; 0 when inactive. */
+    val adFreeUntil: StateFlow<Long> = _adFreeUntil
+
+    /** True while an earned ad-free window is still running. */
+    fun isAdFreeActive(): Boolean {
+        adFreePrefs // force the lazy restore before reading the flow
+        return System.currentTimeMillis() < _adFreeUntil.value
+    }
+
+    /** Minutes left in the current window, 0 when none is active. */
+    fun adFreeMinutesRemaining(): Int {
+        val remaining = _adFreeUntil.value - System.currentTimeMillis()
+        return if (remaining > 0) ((remaining + 59_999) / 60_000).toInt() else 0
+    }
+
+    /**
+     * Start (or extend) the ad-free window after a rewarded ad completes.
+     * Extending rather than overwriting means a user who watches again near the end
+     * of a window is not silently robbed of the time they just earned.
+     */
+    fun grantAdFreeWindow(durationMillis: Long = AD_FREE_WINDOW_MS) {
+        val base = maxOf(System.currentTimeMillis(), _adFreeUntil.value)
+        val until = base + durationMillis
+        _adFreeUntil.value = until
+        adFreePrefs.edit().putLong(KEY_AD_FREE_UNTIL, until).apply()
+        Log.d(TAG, "Ad-free window granted until $until (${adFreeMinutesRemaining()} min)")
+    }
 
     // Cache the frequency value to avoid excessive logging
     private var lastFrequencyValue: Int = -1
@@ -442,8 +486,11 @@ class AdManager @Inject constructor(
     }
 
     fun getAdFrequency(): Int {
-        // Default ad frequency - show ad every 5 visits (previously managed by RemoteConfig)
-        val frequency = 5
+        // One interstitial per 8 detail views. Browsing a wallpaper app means opening
+        // many wallpapers per session, so every-5 fired several times in a single sitting
+        // — the interstitial eCPM ($2.04) is a fraction of rewarded ($5.93), so trading
+        // some of that volume for retention and opt-in rewarded views is the better deal.
+        val frequency = 8
         
         // Only log when the value changes to reduce log spam
         if (lastFrequencyValue != frequency) {
@@ -460,6 +507,13 @@ class AdManager @Inject constructor(
             return false
         }
         
+        // An earned ad-free window suppresses interstitials only. Banners stay (they
+        // cost the user nothing) and rewarded stays available (it is opt-in, and is how
+        // the window was earned in the first place).
+        if (isAdFreeActive()) {
+            return false
+        }
+
         // Default: ads are enabled for all non-premium users
         
         // Check if we've reached the threshold based on the frequency
@@ -686,6 +740,17 @@ class AdManager @Inject constructor(
     }
 
     /**
+     * Whether a rewarded ad is ready to show right now.
+     *
+     * showRewardAd() falls through to onAdDismissed() when nothing is loaded, so any
+     * UI that *offers* a rewarded ad must check this first — otherwise the user accepts
+     * the offer, sees nothing happen, and the offer is spent.
+     */
+    fun isRewardedAdLoaded(): Boolean {
+        return rewardedAd != null
+    }
+
+    /**
      * Check if the user is premium
      */
     fun isPremium(): Boolean {
@@ -733,6 +798,13 @@ class AdManager @Inject constructor(
             return false
         }
         
+        // An earned ad-free window suppresses interstitials only. Banners stay (they
+        // cost the user nothing) and rewarded stays available (it is opt-in, and is how
+        // the window was earned in the first place).
+        if (isAdFreeActive()) {
+            return false
+        }
+
         // Default: ads are enabled for all non-premium users
         
         // Check if we've reached the threshold based on the frequency

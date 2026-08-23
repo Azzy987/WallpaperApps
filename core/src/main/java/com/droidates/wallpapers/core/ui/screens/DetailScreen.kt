@@ -84,6 +84,7 @@ import com.droidates.wallpapers.core.ui.components.detail.WallpaperPreview
 import com.droidates.wallpapers.core.ui.components.detail.ActionPhase
 import com.droidates.wallpapers.core.ui.components.detail.ActionButtonContent
 import com.droidates.wallpapers.core.ui.components.detail.rememberFavoriteBounce
+import com.droidates.wallpapers.core.ui.components.AdFreeOfferDialog
 import com.droidates.wallpapers.core.ui.components.detail.RollingCounterText
 import com.droidates.wallpapers.core.model.Wallpaper
 import androidx.compose.foundation.layout.Box
@@ -900,6 +901,38 @@ fun DetailScreen(
 
     // Track metadata loading state in a way that prevents UI flickering
     val localDownloads by viewModel.localDownloads.collectAsState()
+
+    // Ad-free offer. Triggered off interstitialShownCount so it appears just after the
+    // user has sat through a full-screen ad — the moment ad fatigue is highest and a
+    // rewarded trade is most welcome. Offered at most once per session.
+    val interstitialShownCount by adManager.interstitialShownCount.collectAsState()
+    var adFreeOfferShownThisSession by rememberSaveable { mutableStateOf(false) }
+    var showAdFreeOffer by remember { mutableStateOf(false) }
+    LaunchedEffect(interstitialShownCount) {
+        if (interstitialShownCount >= 2 &&
+            !adFreeOfferShownThisSession &&
+            !isPremiumUser &&
+            !adManager.isAdFreeActive()
+        ) {
+            // Warm a rewarded ad first. showRewardAd() silently falls through to its
+            // dismiss callback when nothing is loaded, so offering without one ready
+            // would spend the session's single offer on a dialog that does nothing.
+            if (!adManager.isRewardedAdLoaded()) adManager.loadRewardAd()
+            // Let the interstitial finish dismissing before stacking a dialog on top.
+            kotlinx.coroutines.delay(1500)
+            if (adManager.isRewardedAdLoaded()) {
+                adFreeOfferShownThisSession = true
+                showAdFreeOffer = true
+            }
+        }
+    }
+    if (showAdFreeOffer) {
+        AdFreeOfferDialog(
+            adManager = adManager,
+            activity = activity,
+            onDismiss = { showAdFreeOffer = false }
+        )
+    }
 
     // Download button phase: spinner while in flight, then a checkmark once the
     // download actually succeeded. Keyed off a counter so a second download in the
