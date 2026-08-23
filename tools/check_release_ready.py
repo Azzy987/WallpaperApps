@@ -185,7 +185,29 @@ def main(module):
         if val and "3940256099942544" in val:
             fail(f"{field} is a Google TEST id", "revenue would go nowhere")
 
-    manual.append(f"AdMob: confirm app {ad_app} and its 3 ad units are ACTIVE and linked to the Play listing")
+    # The AdMob *app* id is per-Play-listing. Two modules sharing one means AdMob
+    # attributes both apps' revenue to a single entry, and the second app's units
+    # may not serve at all. The uniqueness sweep above already covers spec-vs-spec;
+    # this catches the app id being wired to the wrong applicationId.
+    if ad_app and app_id:
+        # Legacy :app declared the id in the manifest; :core-based modules take it
+        # from AppSpec. If a module still declares it, the two must agree.
+        mf = read(f"{module}/src/main/AndroidManifest.xml") or ""
+        m_meta = re.search(
+            r'com\.google\.android\.gms\.ads\.APPLICATION_ID"\s+android:value="([^"]+)"', mf)
+        if m_meta:
+            if m_meta.group(1) != ad_app:
+                fail("manifest APPLICATION_ID != spec adMobAppId",
+                     f"manifest {m_meta.group(1)} vs spec {ad_app}; ads stop serving on a mismatch")
+            else:
+                ok("manifest APPLICATION_ID matches spec adMobAppId")
+        else:
+            ok("adMobAppId supplied via AppSpec (GMA Next-Gen; no manifest meta-data)")
+
+    manual.append(
+        f"AdMob: confirm app {ad_app} is the entry for {app_id} (not another app's), "
+        f"and that it plus its 3 ad units are ACTIVE and linked to the Play listing"
+    )
 
     # ── Firebase ────────────────────────────────────────────────────────
     section("Firebase")

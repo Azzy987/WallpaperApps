@@ -223,23 +223,19 @@ class DetailViewModel @Inject constructor(
                 
                 val docRef = getWallpaperDocumentReference(source, wallpaperId)
                 if (docRef != null && isActive) {
-                    val updated = withTimeout(3000L) {
-                        firestore.runTransaction { transaction ->
-                            val snapshot = transaction.get(docRef)
-                            if (!snapshot.exists()) {
-                                false
-                            } else {
-                                transaction.update(docRef, fieldName, FieldValue.increment(1))
-                                true
-                            }
-                        }.await()
+                    // COST: this used to run inside a transaction purely to check the
+                    // document existed, which billed a READ for every increment — and
+                    // views increment on every swipe, so it was the single largest
+                    // source of Firestore reads in the app.
+                    //
+                    // FieldValue.increment() is already atomic server-side and needs no
+                    // transaction. update() on a missing document simply fails with
+                    // NOT_FOUND, which is the same outcome the existence check produced,
+                    // so nothing is lost by dropping the read.
+                    withTimeout(3000L) {
+                        docRef.update(fieldName, FieldValue.increment(1)).await()
                     }
-                    
-                    if (updated) {
-                        Log.d("DetailViewModel", "$label incremented for wallpaper: $wallpaperId")
-                    } else {
-                        Log.w("DetailViewModel", "Skipped $fieldName increment because document does not exist: ${docRef.path}")
-                    }
+                    Log.d("DetailViewModel", "$label incremented for wallpaper: $wallpaperId")
                 } else {
                     Log.w("DetailViewModel", "Could not resolve document reference for wallpaper: $wallpaperId")
                 }
@@ -637,21 +633,11 @@ class DetailViewModel @Inject constructor(
                 // Get the correct document reference using source and wallpaper ID
                 val docRef = getWallpaperDocumentReference(sourceScreen, wallpaperId)
                 if (docRef != null) {
-                    val updated = firestore.runTransaction { transaction ->
-                        val snapshot = transaction.get(docRef)
-                        if (!snapshot.exists()) {
-                            false
-                        } else {
-                            transaction.update(docRef, "views", FieldValue.increment(1))
-                            true
-                        }
-                    }.await()
+                    // No transaction: increment() is atomic on its own, and the
+                    // existence check it wrapped billed an extra read per view.
+                    docRef.update("views", FieldValue.increment(1)).await()
                     hasIncrementedViews = true
-                    if (updated) {
-                        Log.d("DetailViewModel", "Views incremented for wallpaper: $wallpaperId")
-                    } else {
-                        Log.w("DetailViewModel", "Skipped view increment because document does not exist: ${docRef.path}")
-                    }
+                    Log.d("DetailViewModel", "Views incremented for wallpaper: $wallpaperId")
                 } else {
                     Log.w("DetailViewModel", "Could not find document reference for wallpaper: $wallpaperId from source: $sourceScreen")
                 }
@@ -1214,13 +1200,10 @@ class DetailViewModel @Inject constructor(
                 
                 // Use withTimeout to ensure operation completes even if navigation happens quickly
                 withTimeout(3000L) { // 3 seconds max
-                    firestore.runTransaction { transaction ->
-                        val snapshot = transaction.get(docRef)
-                        if (snapshot.exists()) {
-                            transaction.update(docRef, "views", FieldValue.increment(1))
-                        }
-                    }.await()
-                    
+                    // No transaction: see incrementCounter() — the wrapped existence
+                    // check cost one read per increment.
+                    docRef.update("views", FieldValue.increment(1)).await()
+
                     Log.d("DetailViewModel", "View count incremented for wallpaper: ${docRef.id}")
                 }
             } catch (e: Exception) {
@@ -1246,12 +1229,8 @@ class DetailViewModel @Inject constructor(
                 
                 // Use withTimeout to ensure operation completes even if navigation happens quickly
                 withTimeout(3000L) { // 3 seconds max
-                    firestore.runTransaction { transaction ->
-                        val snapshot = transaction.get(docRef)
-                        if (snapshot.exists()) {
-                            transaction.update(docRef, "downloads", FieldValue.increment(1))
-                        }
-                    }.await()
+                    // No transaction: see incrementCounter().
+                    docRef.update("downloads", FieldValue.increment(1)).await()
                     
                     Log.d("DetailViewModel", "Download count incremented for wallpaper: ${docRef.id}")
                 }
