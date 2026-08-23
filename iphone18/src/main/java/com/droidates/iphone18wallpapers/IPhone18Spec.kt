@@ -56,7 +56,7 @@ object IPhone18Spec : AppSpec {
     //  update the App ID in this module's AndroidManifest.xml. These are Google's
     //  official TEST units — they earn nothing and must not ship.
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.
-    override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
+    override val adMobAppId = "ca-app-pub-6427410984085546~9795223799"
     override val adBannerId = "ca-app-pub-6427410984085546/6370984106"
     override val adInterstitialId = "ca-app-pub-6427410984085546/5057902430"
     override val adRewardedId = "ca-app-pub-6427410984085546/3293344299"

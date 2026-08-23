@@ -54,14 +54,11 @@ object GtaViSpec : AppSpec {
     override val billingLifetimeFallbackPrice = "₹299"
     override val billingLifetimeComparePrice = "₹399"
 
-    // TODO(release): replace with this app's own AdMob ids before publishing.
-    // These are Google's public TEST ids — they serve test ads and earn nothing.
-    // tools/check_release_ready.py fails the build-readiness check while they are
-    // here, so this cannot ship by accident.
-    override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
-    override val adBannerId = "ca-app-pub-3940256099942544/6300978111"
-    override val adInterstitialId = "ca-app-pub-3940256099942544/1033173712"
-    override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
+    // Must match APPLICATION_ID in this module's AndroidManifest.xml.
+    override val adMobAppId = "ca-app-pub-6427410984085546~2184327085"
+    override val adBannerId = "ca-app-pub-6427410984085546/1980262625"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/4909678292"
+    override val adRewardedId = "ca-app-pub-6427410984085546/4618918738"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG
