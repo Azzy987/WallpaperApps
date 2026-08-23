@@ -56,8 +56,8 @@ object S25UltraSpec : AppSpec {
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.
     override val adMobAppId = "ca-app-pub-6427410984085546~5645139571"
     override val adBannerId = "ca-app-pub-6427410984085546/4195973834"
-    override val adInterstitialId = "ca-app-pub-6427410984085546/4505443419"
-    override val adRewardedId = "ca-app-pub-6427410984085546/3470776262"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/4347535628"
+    override val adRewardedId = "ca-app-pub-6427410984085546/7442835772"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG

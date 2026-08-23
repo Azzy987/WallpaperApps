@@ -57,9 +57,9 @@ object IPhone18Spec : AppSpec {
     //  official TEST units — they earn nothing and must not ship.
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.
     override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
-    override val adBannerId = "ca-app-pub-3940256099942544/6300978111"
-    override val adInterstitialId = "ca-app-pub-3940256099942544/1033173712"
-    override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
+    override val adBannerId = "ca-app-pub-6427410984085546/6370984106"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/5057902430"
+    override val adRewardedId = "ca-app-pub-6427410984085546/3293344299"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG
