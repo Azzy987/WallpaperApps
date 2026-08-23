@@ -121,6 +121,24 @@ The app builds and runs without this, but shows empty tabs:
 ./gradlew :oneplus16:assembleDebug
 ```
 
+Then run the readiness check, which verifies every repo-side item in this guide
+and prints what still has to be confirmed in the Play Console, AdMob and
+Firestore:
+
+```bash
+python3 tools/check_release_ready.py oneplus16
+```
+
+It fails the things that silently ship wrong: a value still carrying the template
+app's data (ad units, `documentAppUpdate`, prefs and billing ids are checked for
+collisions against every other module), Google's test ad ids left in place, a
+launcher icon identical to the module you copied, a package missing from
+`google-services.json`, a `GOOGLE_WEB_CLIENT_ID` that does not match it, a
+declared `READ_MEDIA_IMAGES`, and an unsigned release AAB.
+
+Prefer it over reading this checklist by hand — the script reads the real files,
+so it cannot go stale the way a written list does.
+
 Then check: app name and icon, onboarding wording, Home loads the right
 collection, Categories shows the brand category, series chips populate, favorites
 persist, paywall price, share text names the right app.
