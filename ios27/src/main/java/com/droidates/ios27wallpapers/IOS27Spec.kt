@@ -39,8 +39,8 @@ object IOS27Spec : AppSpec {
 
     // ── Monetisation ────────────────────────────────────────────────────────
     override val billingLifetimeId = "ios27lifetime"
-    override val billingLifetimeFallbackPrice = "₹299"
-    override val billingLifetimeComparePrice = "₹399"
+    override val billingLifetimeFallbackPrice = "₹199"
+    override val billingLifetimeComparePrice = "₹299"
 
     // iOS 27's own live banner unit. (4595754115 is iPhone 17's — don't reuse it here.)
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.

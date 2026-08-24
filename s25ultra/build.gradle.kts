@@ -42,8 +42,8 @@ android {
         applicationId = "com.droidates.s25ultrawallpapers"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1131
-        versionName = "3.1"
+        versionCode = 1132
+        versionName = "3.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
     }

@@ -39,8 +39,8 @@ object IPhone17Spec : AppSpec {
 
     // ── Monetisation ────────────────────────────────────────────────────────
     override val billingLifetimeId = "iphone17lifetime"
-    override val billingLifetimeFallbackPrice = "₹299"
-    override val billingLifetimeComparePrice = "₹399"
+    override val billingLifetimeFallbackPrice = "₹199"
+    override val billingLifetimeComparePrice = "₹299"
 
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.
     override val adMobAppId = "ca-app-pub-6427410984085546~1729487126"

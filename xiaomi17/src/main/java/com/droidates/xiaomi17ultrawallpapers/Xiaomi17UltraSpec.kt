@@ -39,8 +39,8 @@ object Xiaomi17UltraSpec : AppSpec {
 
     // ── Monetisation ────────────────────────────────────────────────────────
     override val billingLifetimeId = "xiaomi17ultralifetime"
-    override val billingLifetimeFallbackPrice = "₹299"
-    override val billingLifetimeComparePrice = "₹399"
+    override val billingLifetimeFallbackPrice = "₹199"
+    override val billingLifetimeComparePrice = "₹299"
 
     // Must match APPLICATION_ID in this module's AndroidManifest.xml.
     override val adMobAppId = "ca-app-pub-6427410984085546~2342842550"
