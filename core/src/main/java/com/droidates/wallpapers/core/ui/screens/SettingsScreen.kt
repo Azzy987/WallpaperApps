@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import com.droidates.wallpapers.core.utils.findActivity
+import com.droidates.wallpapers.core.utils.ConsentManager
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -81,6 +83,11 @@ fun SettingsScreen(
     premiumViewModel: PremiumViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    // UMP privacy-options entry point: only rendered when UMP reports it is required.
+    val settingsActivity = remember(context) { context.findActivity() }
+    val showPrivacyOptions = remember(context) {
+        ConsentManager.isPrivacyOptionsRequired(context)
+    }
     val refreshRateManager = remember { RefreshRateManager(context) }
     val themeMode by viewModel.themeMode.collectAsState()
     val isSignedIn by authViewModel.isSignedIn.collectAsState()
@@ -1068,6 +1075,22 @@ fun SettingsScreen(
                                     onClick = { viewModel.showPrivacyPolicy() }
                                 )
                             )
+                            // Google requires a way back into the consent choice, shown
+                            // exactly when UMP reports it is required (EEA/UK users who
+                            // have already answered). Hidden everywhere else.
+                            if (showPrivacyOptions) {
+                                SettingsItemRow(
+                                    item = SettingsItem(
+                                        icon = Icons.Default.PrivacyTip,
+                                        title = "Ad privacy options",
+                                        onClick = {
+                                            settingsActivity?.let { act ->
+                                                ConsentManager.showPrivacyOptions(act)
+                                            }
+                                        }
+                                    )
+                                )
+                            }
                         }
                     }
                     

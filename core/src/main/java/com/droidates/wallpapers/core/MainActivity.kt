@@ -14,6 +14,8 @@ import com.droidates.wallpapers.core.data.preferences.LocalUserPreferences
 import com.droidates.wallpapers.core.navigation.NavGraph
 import com.droidates.wallpapers.core.ui.theme.WallpaperAppTheme
 import com.droidates.wallpapers.core.utils.AdManager
+import com.droidates.wallpapers.core.utils.ConsentManager
+import com.droidates.wallpapers.core.utils.MobileAdsInitializer
 import com.droidates.wallpapers.core.utils.LocalAdManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -225,6 +227,21 @@ class MainActivity : ComponentActivity() {
         
         if (VERBOSE_LOGGING) {
             Log.d(TAG, "MainActivity onCreate() - Natural splash screen timing")
+        }
+
+        // Ad consent (UMP). Must run before MobileAds initializes so the SDK picks up
+        // the stored choice: EEA/UK users without a consent signal get non-personalised
+        // ads at a much lower eCPM, and several mediation networks decline to bid.
+        //
+        // Outside those regions UMP reports NOT_REQUIRED and this is a no-op, so it adds
+        // nothing to startup for most traffic. It never blocks the UI — the callback only
+        // nudges ad initialization once the choice settles.
+        ConsentManager.gather(this) {
+            lifecycleScope.launch {
+                if (ConsentManager.canRequestAds(applicationContext)) {
+                    MobileAdsInitializer.ensureInitialized(applicationContext)
+                }
+            }
         }
 
         // CRITICAL: Request 120Hz refresh rate using multiple approaches for maximum compatibility

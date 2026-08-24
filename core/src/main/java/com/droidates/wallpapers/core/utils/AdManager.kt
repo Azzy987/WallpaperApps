@@ -315,7 +315,11 @@ class AdManager @Inject constructor(
                 _initializationComplete.value = true
 
                 delay(5000)
-                if (!_isPremiumUser.value) {
+                // Consent gate: in the EEA/UK a request sent before the user has made a
+                // choice is a compliance problem, and an unconsented request is worth
+                // little anyway. Outside those regions canRequestAds() is true from the
+                // start, so this changes nothing for most traffic.
+                if (!_isPremiumUser.value && ConsentManager.canRequestAds(context)) {
                     preloadAds()
                 }
             } catch (e: Exception) {

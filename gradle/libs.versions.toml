@@ -49,6 +49,10 @@ paletteKtx = "1.0.0"
 # different package (com.google.android.libraries.ads.mobile.sdk) and a different API,
 # so it is a port rather than a version bump. Requires minSdk 24+ (we target 28).
 adsMobileSdk = "1.3.1"
+# UMP (User Messaging Platform) — Google's certified CMP. Required for EEA/UK
+# traffic; without a consent signal those users serve non-personalised ads at a
+# much lower eCPM, and several mediation networks decline to bid at all.
+userMessagingPlatform = "3.2.0"
 lifecycleProcess = "2.8.7"
 playServicesAuth = "20.7.0"
 profileinstaller = "1.4.1"
@@ -128,6 +132,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 ads-mobile-sdk = { module = "com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk", version.ref = "adsMobileSdk" }
+user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 androidx-startup-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "startupRuntime" }

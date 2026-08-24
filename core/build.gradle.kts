@@ -87,6 +87,8 @@ dependencies {
     api(libs.androidx.navigation.compose)
     api(libs.coil.compose)
     api(libs.ads.mobile.sdk)
+    // Consent gathering for EEA/UK; see ConsentManager.
+    api(libs.user.messaging.platform)
 
     api(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
