@@ -8,8 +8,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.droidates.oneplus7wallpapers" />
-                  <option name="mobileSdkAppId" value="1:352408897001:android:c5228b8f96b2222fd1f778" />
+                  <option name="appId" value="com.droidates.gtaviwallpapers" />
+                  <option name="mobileSdkAppId" value="1:352408897001:android:d28e379ee76ad9cdd1f778" />
                   <option name="projectId" value="wallpaper-apps-cad2c" />
                   <option name="projectNumber" value="352408897001" />
                 </ConnectionSetting>

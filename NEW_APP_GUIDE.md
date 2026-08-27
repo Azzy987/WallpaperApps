@@ -68,9 +68,21 @@ Then update `WallpaperApp.kt` to install the new spec object.
 - `res/values/strings.xml` → `app_name`
 - `AndroidManifest.xml` → `android:name` of the Application class and the AdMob
   `APPLICATION_ID`
-- `res/mipmap-*/` → launcher icons
-- `res/drawable/` + `drawable-v24/` → `onboarding_screen1/2/3.webp` if this app
-  needs its own artwork (otherwise it inherits `:core`'s)
+- `res/mipmap-*/` → **launcher icons** — replace them. A copied module ships the
+  source app's icon, which is the single most visible way a new app looks like a
+  clone of the one it came from, and it hurts store discovery. The readiness check
+  hashes the icon against every other module and fails on a match.
+- `res/drawable/onboarding_screen1.webp` → **always replace this one.** It is the
+  hero wallpaper on the first onboarding page and it must show *this* device or
+  brand — shipping the template app's shot is the first thing a new user sees, and
+  it advertises the wrong phone.
+
+> **Only screen 1 is per-app.** `onboarding_screen2.webp` and
+> `onboarding_screen3.webp` are the shared feature illustrations and are byte
+> identical across every module — leave them alone, or drop them entirely and let
+> the module inherit `:core`'s copies. A module that overrides only screen 1 (see
+> `pixel11`, `gtavi`) is the intended shape; overriding all three just duplicates
+> two files that never differ.
 
 ## 5. Firebase
 

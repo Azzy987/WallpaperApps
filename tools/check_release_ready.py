@@ -13,6 +13,7 @@ real files, so it cannot drift from the code.
 
 Exit code 0 when nothing is blocking, 1 when something is.
 """
+import hashlib
 import json
 import os
 import re
@@ -290,7 +291,6 @@ def main(module):
             warn(f"no launcher icon in {d}")
 
     # Icons identical to another module's = the template's icon was never replaced.
-    import hashlib
     my_icon = rel(module, "src/main/res/mipmap-xxxhdpi/ic_launcher.webp")
     if os.path.exists(my_icon):
         my_hash = hashlib.sha256(open(my_icon, "rb").read()).hexdigest()
@@ -303,6 +303,29 @@ def main(module):
                     break
         else:
             ok("launcher icon is unique to this app")
+
+    # The first onboarding page is a hero shot of the device this app is about.
+    # A copied module ships the template app's wallpaper, which is the very first
+    # thing a new user sees and advertises the wrong phone. Screens 2 and 3 are
+    # shared feature illustrations and are meant to be identical everywhere.
+    ob = rel(module, "src/main/res/drawable/onboarding_screen1.webp")
+    if os.path.exists(ob):
+        ob_hash = hashlib.sha256(open(ob, "rb").read()).hexdigest()
+        clash = None
+        for other in list(others) + ["core"]:
+            other_ob = rel(other, "src/main/res/drawable/onboarding_screen1.webp")
+            if os.path.exists(other_ob):
+                if hashlib.sha256(open(other_ob, "rb").read()).hexdigest() == ob_hash:
+                    clash = other
+                    break
+        if clash:
+            fail(f"onboarding_screen1 is identical to :{clash}'s",
+                 "first page shows the wrong device — replace with this app's wallpaper")
+        else:
+            ok("onboarding_screen1 is unique to this app")
+    else:
+        warn("no onboarding_screen1.webp; inheriting :core's",
+             "the first onboarding page will show the generic wallpaper")
 
     # ── Manifest / policy ───────────────────────────────────────────────
     section("Manifest & Play policy")

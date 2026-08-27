@@ -1,0 +1,9 @@
+# One headline per screenshot, matched to raw/ in sorted order.
+# {app} expands to the app_name from strings.xml.
+# Optional trailing '| emoji' adds a badge, e.g.  Save Favorites | 💜
+Welcome to {app} – Redefine Your Screen | 🤩
+Official Samsung Drops, Straight to Your Screen
+Organized Collections for Quick Discovery
+Stay Ahead with Trending Wallpapers | ⭐
+Save Your Favorite Wallpapers Instantly | 💜
+Every Galaxy Series, All in One Place

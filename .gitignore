@@ -28,3 +28,9 @@ keystore.properties
 release/
 *.aab
 *.apk
+
+# Play Store screenshots: raw captures and generated listing images are large
+# binaries and reproducible from the tool. captions.txt IS tracked — it is the
+# hand-tuned wording per app.
+storeshots/*/raw/
+storeshots/*/out/
