@@ -18,6 +18,7 @@ object OnePlus7Spec : AppSpec {
     override val brandOnAccentContainer = 0xFF410002
 
     // ── Firestore ───────────────────────────────────────────────────────────
+    override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
 
     override val categoryBrandName = "OnePlus"

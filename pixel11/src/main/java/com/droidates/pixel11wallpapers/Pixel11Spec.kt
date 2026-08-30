@@ -25,6 +25,7 @@ object Pixel11Spec : AppSpec {
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Home wallpapers are SHARED by all Pixel apps.
+    override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
 
     override val categoryBrandName = "Google"

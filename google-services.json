@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "352408897001-8pkh9h91ai0djv09d5rvvsf97bvo1gmp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.gtaviwallpapers",
+            "certificate_hash": "76b630de3a65195a41e80284cae8603588d671af"
+          }
+        },
+        {
           "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -161,6 +169,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "352408897001-2q63pm9brnriav19767kpt19faj6f231.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.iphone18wallpapers",
+            "certificate_hash": "a43ff2c0621a32ddc2b49be70fa721e55ed3c4cd"
+          }
+        },
+        {
+          "client_id": "352408897001-7ohgc2ge6ud9qpgdqbism6iqo42gsej1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droidates.iphone18wallpapers",
+            "certificate_hash": "3321593258549d6073797cf52528df506beeb36e"
+          }
+        },
         {
           "client_id": "352408897001-k4f317q8jsrr1bm3rn9bah919ofg9eou.apps.googleusercontent.com",
           "client_type": 3

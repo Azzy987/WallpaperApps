@@ -28,6 +28,9 @@ object GtaViSpec : AppSpec {
     // GTA VI wallpapers carry no `launchYear` field, and Firestore's orderBy drops
     // documents that lack the ordered field — sorting by it returned an empty Home tab.
     // Also hides the Release Date option, which is meaningless for a game.
+    // No series on GTA VI wallpapers, so the chip row and the toolbar filter icon are
+    // both hidden rather than showing a lone "All Series" chip that filters nothing.
+    override val supportsSeriesFilter = false
     override val supportsLaunchYearSort = false
 
     override val categoryBrandName = "GTAVI"

@@ -35,6 +35,16 @@ interface AppSpec {
     val brandOnAccentContainer: Long
 
     /**
+     * Whether this app's wallpapers are divided into `series` at all.
+     *
+     * False hides both series surfaces in the brand category — the filter chip row and
+     * the toolbar filter icon. CategoryViewModel always emits a lone "All Series" entry
+     * as a fallback, so without this an app with no series data still renders a chip row
+     * containing one chip that filters nothing.
+     */
+    val supportsSeriesFilter: Boolean
+
+    /**
      * Whether wallpapers in this app carry a `launchYear` field.
      *
      * Firestore's orderBy silently DROPS documents that lack the ordered field, so an

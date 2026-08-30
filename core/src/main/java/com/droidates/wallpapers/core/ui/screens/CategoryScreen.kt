@@ -326,8 +326,10 @@ fun CategoryScreen(
                     }
                 },
                 actions = {
-                    // Show filter icon for Apple category
-                    if (categoryName.equals(AppConfig.CATEGORY_BRAND_NAME, ignoreCase = true)) {
+                    // Brand-category series filter, hidden for apps with no series data.
+                    if (AppConfig.SUPPORTS_SERIES_FILTER &&
+                        categoryName.equals(AppConfig.CATEGORY_BRAND_NAME, ignoreCase = true)
+                    ) {
                         IconButton(onClick = { showSeriesFilterDialog = true }) {
                             Icon(Icons.Default.FilterList, "Filter Series")
                         }
@@ -585,8 +587,10 @@ fun CategoryScreen(
                     }
                 }
 
-                // Show Apple series list only for Apple category
-                if (categoryName.equals(
+                // Series chip row. Gated on the app having series at all: CategoryViewModel
+                // falls back to a lone "All Series" entry, so isNotEmpty() alone would
+                // still render a one-chip row that filters nothing.
+                if (AppConfig.SUPPORTS_SERIES_FILTER && categoryName.equals(
                         AppConfig.CATEGORY_BRAND_NAME,
                         ignoreCase = true
                     ) && availableSeries.isNotEmpty()
@@ -642,8 +646,10 @@ fun CategoryScreen(
                     }
                 }
 
-                // Show wallpapers for Apple category with HorizontalPager (like subcategories)
-                if (categoryName.equals(
+                // Brand category with a series pager, one page per series. Gated on the app
+                // having series: without it, an app with no series data got a one-page
+                // pager instead of falling through to the plain grid below.
+                if (AppConfig.SUPPORTS_SERIES_FILTER && categoryName.equals(
                         AppConfig.CATEGORY_BRAND_NAME,
                         ignoreCase = true
                     ) && availableSeries.isNotEmpty()

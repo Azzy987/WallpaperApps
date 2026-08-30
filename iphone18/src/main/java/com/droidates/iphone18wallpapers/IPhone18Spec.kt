@@ -29,6 +29,7 @@ object IPhone18Spec : AppSpec {
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Apple-brand wallpapers, shared with the other iPhone/iOS apps.
+    override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
 
     override val categoryBrandName = "Apple"
@@ -42,7 +43,7 @@ object IPhone18Spec : AppSpec {
 
     override val documentBannersApp = "iPhoneWallpapers"
     override val documentUsersApp = "iPhoneWallpapers"
-    override val collectionBannersSub = "iPhone18Banners"
+    override val collectionBannersSub = "iPhoneFoldBanners"
     override val collectionUsersSub = "iPhone18AndroidUsers"
     override val documentAppUpdate = "iphone18wallpapers"
 

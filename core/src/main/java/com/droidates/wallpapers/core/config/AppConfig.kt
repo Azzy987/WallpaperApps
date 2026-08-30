@@ -39,6 +39,7 @@ object AppConfig {
     val BRAND_ACCENT_CONTAINER: Long get() = s.brandAccentContainer
     val BRAND_ON_ACCENT_CONTAINER: Long get() = s.brandOnAccentContainer
     val SUPPORTS_LAUNCH_YEAR_SORT: Boolean get() = s.supportsLaunchYearSort
+    val SUPPORTS_SERIES_FILTER: Boolean get() = s.supportsSeriesFilter
     val CATEGORY_BRAND_NAME: String get() = s.categoryBrandName
 
     val COLLECTION_HOME: String get() = s.collectionHome
