@@ -25,14 +25,18 @@ object GtaViSpec : AppSpec {
     override val brandOnAccentContainer = 0xFF3D0022
 
     // ── Firestore ───────────────────────────────────────────────────────────
-    override val categoryBrandName = "GTA"
-    override val collectionHome = "GTA"
-    override val documentDevicesBrand = "GTA"
+    override val categoryBrandName = "GTAVI"
+    override val collectionHome = "GTAVI"
+    override val documentDevicesBrand = "GTAVI"
     // The chips merge a second Devices doc; "Android" is the shared cross-app list.
     override val documentDevicesSecondary = "Android"
     // Firestore range is [first, second) — bump the last character of the prefix.
-    // Wallpapers must carry a `series` starting with "GTA" (e.g. "GTA VI") or the
-    // filter chips silently come back empty.
+    //
+    // No wallpaper in the GTAVI collection carries a `series` field today, so this scan
+    // returns nothing and CategoryViewModel falls back to a lone "All Series" chip —
+    // which is the correct look for an app with no sub-series. The range is kept rather
+    // than emptied so that adding `series: "GTAVI …"` later starts populating chips with
+    // no code change; it costs one prefix query that matches zero documents.
     override val seriesPrefixRanges = listOf("GTA" to "GTB")
 
     override val documentBannersApp = "GTAWallpapers"
