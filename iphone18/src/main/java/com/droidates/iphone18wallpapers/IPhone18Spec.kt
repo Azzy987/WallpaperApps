@@ -18,10 +18,14 @@ object IPhone18Spec : AppSpec {
     override val deviceFamilyName = "iPhone Fold"
 
     // Original Droidates orange accent.
-    override val brandAccent = 0xFFBF5000
+    // Material Blue. The four values are one palette, not independent colours: accent
+    // and container are the light/dark pair, and the two "on" colours must stay legible
+    // on top of them — so changing the accent alone would leave dark-orange text sitting
+    // on a blue container.
+    override val brandAccent = 0xFF1976D2          // Blue 700
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDBC9
-    override val brandOnAccentContainer = 0xFF3A1400
+    override val brandAccentContainer = 0xFFD1E4FF // light blue surface
+    override val brandOnAccentContainer = 0xFF001C38
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Apple-brand wallpapers, shared with the other iPhone/iOS apps.
