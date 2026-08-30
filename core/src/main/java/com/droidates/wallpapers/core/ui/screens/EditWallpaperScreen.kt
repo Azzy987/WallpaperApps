@@ -264,26 +264,22 @@ fun EditWallpaperScreen(
                     navigationState.navigateBack()
                 },
                 onDownloadClick = {
-                    viewModel.downloadEditedWallpaper(context) { savedUri ->
-                        editedDownloadUri = savedUri
-
-                        // The detail screen shows an interstitial after a download; the
-                        // edit screen was missing it entirely, so this path monetised
-                        // nothing. Same premium check and the same activity-state guards
-                        // used elsewhere, to avoid showing an ad into a dead window.
-                        if (!isPremiumUser) {
-                            (context as? android.app.Activity)?.let { act ->
-                                if (!act.isDestroyed && !act.isFinishing && !act.isChangingConfigurations) {
-                                    try {
-                                        adManager.showInterstitialAd(act)
-                                    } catch (e: Exception) {
-                                        Log.e("EditWallpaperScreen", "Error showing ad after edited download", e)
-                                    }
-                                }
-                            }
+                    // Ad FIRST, then the save. The edit screen's download used to fire
+                    // its interstitial from inside the completion callback, which races
+                    // activity teardown the same way the detail screen's did.
+                    val startSave = {
+                        adManager.recordWallpaperAction()
+                        viewModel.downloadEditedWallpaper(context) { savedUri ->
+                            editedDownloadUri = savedUri
+                            NotificationPermissionPrompt.recordSuccess(context)
                         }
+                    }
 
-                        NotificationPermissionPrompt.recordSuccess(context)
+                    val act = context as? android.app.Activity
+                    if (act != null && !isPremiumUser) {
+                        adManager.showInterstitialThen(act) { startSave() }
+                    } else {
+                        startSave()
                     }
                 }
             )

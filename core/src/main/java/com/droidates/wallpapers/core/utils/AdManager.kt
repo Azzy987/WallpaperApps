@@ -44,6 +44,15 @@ class AdManager @Inject constructor(
 
         /** Default length of the ad-free window earned by watching a rewarded ad. */
         const val AD_FREE_WINDOW_MS = 30 * 60 * 1000L // 30 minutes
+
+        /**
+         * How long showInterstitialThen waits for an ad callback before running the
+         * user's action regardless. Covers the activity-destroyed guards inside
+         * showInterstitialAd, which return without invoking any callback. Generous
+         * enough that a normally-dismissed ad always wins the race.
+         */
+        private const val AD_CALLBACK_TIMEOUT_MS = 12000L
+
         private const val KEY_AD_FREE_UNTIL = "ad_free_until"
         
         // Use production ads only - IDs defined in AppConfig
@@ -136,6 +145,48 @@ class AdManager @Inject constructor(
     private val _interstitialShownCount = MutableStateFlow(0)
     val interstitialShownCount: StateFlow<Int> = _interstitialShownCount
     
+    // ── Per-session wallpaper action gate ──────────────────────────────────
+    // After this many downloads/applies in one session the user is offered premium
+    // or a rewarded ad. Deliberately per-SESSION and not lifetime: a lifetime cap
+    // turns into a hard paywall on day three for exactly the people who use the app
+    // most, while a session cap only ever interrupts a single long browsing run.
+    //
+    // Three, not two: trying a couple of wallpapers back to back is ordinary
+    // browsing in a wallpaper app, and interrupting that before the user has felt
+    // any value is what makes people uninstall rather than pay.
+    private val FREE_ACTIONS_PER_SESSION = 3
+
+    // Not persisted — process death IS the session boundary, so a plain counter in
+    // memory is the whole implementation.
+    private var sessionActionCount = 0
+
+    /** True when the user still has free wallpaper actions left this session. */
+    fun hasFreeActionsLeft(): Boolean =
+        _isPremiumUser.value || isAdFreeActive() || sessionActionCount < FREE_ACTIONS_PER_SESSION
+
+    /**
+     * Record a completed download/apply. Premium users and users inside an earned
+     * ad-free window are never counted, so their state cannot drift toward the gate.
+     */
+    fun recordWallpaperAction() {
+        if (_isPremiumUser.value || isAdFreeActive()) return
+        sessionActionCount++
+        Log.d(TAG, "Wallpaper action $sessionActionCount/$FREE_ACTIONS_PER_SESSION this session")
+    }
+
+    /** Actions used so far this session, for UI copy on the gate dialog. */
+    fun sessionActionsUsed(): Int = sessionActionCount
+
+    /**
+     * Clear the gate after the user watches a rewarded ad. The ad-free window
+     * granted alongside this is what makes the reward feel worth watching — see
+     * grantAdFreeWindow.
+     */
+    fun resetSessionActions() {
+        sessionActionCount = 0
+        Log.d(TAG, "Session action count reset")
+    }
+
     // Callback for when interstitial ad is dismissed
     private var interstitialAdDismissCallback: (() -> Unit)? = null
     private var lastInterstitialCallbackUptimeMs: Long = 0L
@@ -536,7 +587,13 @@ class AdManager @Inject constructor(
         return shouldShow
     }
 
-    fun loadInterstitialAd(onAdLoaded: () -> Unit = {}) {
+    /**
+     * @param bypassThrottle set for the refill immediately after an ad was shown. The
+     * MIN_LOAD_INTERVAL throttle exists to stop retry storms on FAILED loads; a
+     * successful show that consumed the cached ad is not that case, and honouring the
+     * throttle there leaves the next wallpaper action with no ad to show.
+     */
+    fun loadInterstitialAd(onAdLoaded: () -> Unit = {}, bypassThrottle: Boolean = false) {
         // Run checks on current thread before moving to background
         // Skip if user is premium
         if (_isPremiumUser.value) {
@@ -567,7 +624,7 @@ class AdManager @Inject constructor(
         
         // Check if we're trying to load too frequently - use adaptive cooldown
         val currentTime = SystemClock.elapsedRealtime()
-        if (currentTime - lastInterstitialLoadAttemptTime < MIN_LOAD_INTERVAL) {
+        if (!bypassThrottle && currentTime - lastInterstitialLoadAttemptTime < MIN_LOAD_INTERVAL) {
             Log.d(TAG, "Skipping interstitial load - too soon since last attempt")
             isLoadingInterstitial.set(false)
             return
@@ -578,9 +635,20 @@ class AdManager @Inject constructor(
         // OPTIMIZATION: Use adaptive retry count based on network and device conditions
         val maxRetries = adaptiveAdLoadingManager.getRecommendedRetryCount()
         if (interstitialRetryCount.get() >= maxRetries) {
-            Log.d(TAG, "Max retry count reached for interstitial ad: $maxRetries")
-            isLoadingInterstitial.set(false)
-            return
+            if (bypassThrottle) {
+                // Refill after a successful show. The retry budget tracks CONSECUTIVE
+                // load failures, and an ad that just displayed proves ads are working —
+                // so the old count is stale. Without this reset a user who hits three
+                // failed loads early (a tunnel, a dropped connection) gets NO further
+                // interstitials for the entire session, which silently kills the
+                // revenue this ad-first flow is built around.
+                Log.d(TAG, "Resetting stale retry count after a successful ad show")
+                interstitialRetryCount.set(0)
+            } else {
+                Log.d(TAG, "Max retry count reached for interstitial ad: $maxRetries")
+                isLoadingInterstitial.set(false)
+                return
+            }
         }
         
         // Start loading
@@ -893,6 +961,80 @@ class AdManager @Inject constructor(
     /**
      * Show interstitial ad if loaded, otherwise load and show
      */
+    /**
+     * Show an interstitial FIRST, then run [action] once it is dismissed.
+     *
+     * Ads used to fire after the download/apply had already happened. That ordering
+     * loses work: onAdDismissedFullScreenContent bails out early when the activity is
+     * gone, so an ad shown while returning from the system wallpaper picker could
+     * skip the completion callback entirely. Showing the ad while the app is still
+     * foregrounded and stable, then starting the work on dismissal, removes that
+     * whole class of failure.
+     *
+     * The action is guaranteed to run EXACTLY once on every path — ad dismissed, ad
+     * failed to show, no ad loaded, or an exception. A failed ad must never cost the
+     * user their download. [runOnceGuard] enforces the "exactly" half, because
+     * showInterstitialAd can reach both a failure callback and an exception handler
+     * for a single call.
+     */
+    fun showInterstitialThen(activity: Activity, action: () -> Unit) {
+        // Premium and earned ad-free windows skip straight to the work.
+        if (_isPremiumUser.value || isAdFreeActive()) {
+            action()
+            return
+        }
+
+        val hasRun = AtomicBoolean(false)
+        // Deliberately NOT routed through runInterstitialCompletionSafely: that helper
+        // debounces calls within 250ms, and the dismissal path already spends that
+        // budget invoking this guard — a second hop would be swallowed and the user's
+        // download would never start. hasRun already guarantees single execution, so
+        // the debounce buys nothing here. Posting to the main looper still lets the ad
+        // finish tearing down before the action touches the UI.
+        val runOnceGuard = {
+            if (hasRun.compareAndSet(false, true)) {
+                mainHandler.postDelayed({
+                    runCatching(action).onFailure { error ->
+                        Log.e(TAG, "Error running post-interstitial action: ${error.message}", error)
+                    }
+                }, 120L)
+            }
+        }
+
+        if (!isInterstitialAdLoaded()) {
+            // Nothing to show: do the work now and warm an ad for next time rather
+            // than making the user wait on a network round trip.
+            loadInterstitialAd()
+            runOnceGuard()
+            return
+        }
+
+        showInterstitialAd(
+            activity = activity,
+            onAdDismissed = runOnceGuard,
+            onAdFailedToShow = runOnceGuard
+        )
+
+        // Safety net: the two activity-destroyed guards inside showInterstitialAd
+        // return without invoking either callback. Without this the user's action
+        // would be dropped silently in exactly the case ad-first was meant to fix.
+        coroutineScope.launch {
+            delay(AD_CALLBACK_TIMEOUT_MS)
+            if (!hasRun.get()) {
+                if (activity.isDestroyed || activity.isFinishing) {
+                    // The screen the action belonged to is gone. Running the download
+                    // now would write against a dead context, so drop it and let the
+                    // user retry on a live screen.
+                    Log.w(TAG, "Interstitial callback missing and activity gone; dropping action")
+                    hasRun.set(true)
+                } else {
+                    Log.w(TAG, "Interstitial callback never arrived; running action anyway")
+                    withContext(Dispatchers.Main) { runOnceGuard() }
+                }
+            }
+        }
+    }
+
     fun showInterstitialAd(
         activity: Activity,
         onAdDismissed: () -> Unit = {},
@@ -954,10 +1096,14 @@ class AdManager @Inject constructor(
                             runInterstitialCompletionSafely(callback)
                         }
                         
-                        // Load next ad with some delay
+                        // Reload promptly: every wallpaper action (download, then
+                        // apply) is expected to show its own ad, so the next one must
+                        // already be in flight by the time the user taps again. The old
+                        // 5s wait meant an apply straight after a download found nothing
+                        // loaded and silently skipped its ad.
                         coroutineScope.launch {
-                            delay(5000) // 5 second delay to avoid immediate reloading
-                            loadInterstitialAd()
+                            delay(500)
+                            loadInterstitialAd(bypassThrottle = true)
                         }
                     }
                     

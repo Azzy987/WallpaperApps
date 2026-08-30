@@ -30,18 +30,23 @@ fun WallpaperSetHandler(
     adManager: AdManager,
     context: Context,
     onShowUnlockDialog: () -> Unit,
-    onComplete: () -> Unit = {}
+    onComplete: () -> Unit = {},
+    /**
+     * Invoked instead of the wallpaper work once the session's free actions are spent.
+     * Receives the deferred action so the caller's gate dialog can resume it after a
+     * rewarded ad. Defaults to running the action, so a caller that has not adopted the
+     * gate keeps working exactly as before rather than silently dropping the tap.
+     */
+    onLimitReached: (proceed: () -> Unit) -> Unit = { it() }
 ): (WallpaperSetOption) -> Unit {
     var isSettingWallpaper by remember { mutableStateOf(false) }
 
-    return { option: WallpaperSetOption ->
+    // The wallpaper work itself. Split out so the interstitial can run BEFORE it:
+    // these paths hand off to the system wallpaper picker, and an ad fired on the way
+    // back used to land on a half-restored activity and skip its dismissal callback.
+    val runSet: (WallpaperSetOption) -> Unit = { option: WallpaperSetOption ->
         wallpaper?.let { wall ->
-            // First check if this is exclusive content that requires watching an ad
-            // Skip for premium users
-            if (isExclusive && !hasWatchedAd && !isPremiumUser) {
-                onShowUnlockDialog()
-                return@let
-            }
+            adManager.recordWallpaperAction()
 
             if (option == WallpaperSetOption.EXTERNAL) {
                 // Show toast before starting the process
@@ -66,26 +71,7 @@ fun WallpaperSetHandler(
 
                                 // Register an activity lifecycle callback to show ad when user returns
                                 (context as? Activity)?.let { act ->
-                                    // Only show ad for non-premium users
-                                    if (!isPremiumUser) {
-                                        // WALLPAPER AD CRASH FIX: Add delay and lifecycle checks before showing ad
-                                        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                                            // Wait for activity to stabilize after returning from external picker
-                                            kotlinx.coroutines.delay(1000)
-                                            
-                                            // Double-check activity state before showing ad
-                                            if (!act.isDestroyed && !act.isFinishing && !act.isChangingConfigurations) {
-                                                try {
-                                                    adManager.loadInterstitialAd()
-                                                    adManager.showInterstitialAd(act)
-                                                } catch (e: Exception) {
-                                                    Log.e("WallpaperSetHandler", "Error showing ad after wallpaper set: ${e.message}")
-                                                }
-                                            } else {
-                                                Log.w("WallpaperSetHandler", "Activity not ready for ad display after wallpaper set")
-                                            }
-                                        }
-                                    }
+                        // Ad already shown before this work started (see runSet).
                                 }
 
                                 // Open system wallpaper picker with file
@@ -187,28 +173,7 @@ fun WallpaperSetHandler(
                             Log.e("WallpaperSetHandler", "Error logging analytics: ${e.message}")
                         }
 
-                        // Show interstitial ad after setting wallpaper if user is not premium
-                        (context as? Activity)?.let { act ->
-                            if (!isPremiumUser) {
-                                // WALLPAPER AD CRASH FIX: Add delay and lifecycle checks before showing ad
-                                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                                    // Wait for wallpaper setting process to complete fully
-                                    kotlinx.coroutines.delay(800)
-
-                                    // Double-check activity state before showing ad
-                                    if (!act.isDestroyed && !act.isFinishing && !act.isChangingConfigurations) {
-                                        try {
-                                            adManager.loadInterstitialAd()
-                                            adManager.showInterstitialAd(act)
-                                        } catch (e: Exception) {
-                                            Log.e("WallpaperSetHandler", "Error showing ad after wallpaper set: ${e.message}")
-                                        }
-                                    } else {
-                                        Log.w("WallpaperSetHandler", "Activity not ready for ad display after wallpaper set")
-                                    }
-                                }
-                            }
-                        }
+                        // Ad already shown before this work started (see runSet).
 
                         onComplete()
                     }
@@ -216,4 +181,24 @@ fun WallpaperSetHandler(
             }
         }
     }
-} 
+
+    // Public entry point: exclusive-unlock check, then session gate, then the
+    // interstitial, and only then the wallpaper work.
+    return { option: WallpaperSetOption ->
+        if (wallpaper != null) {
+            if (isExclusive && !hasWatchedAd && !isPremiumUser) {
+                onShowUnlockDialog()
+            } else if (!adManager.hasFreeActionsLeft()) {
+                // Out of free actions this session: hand off to the gate dialog owner.
+                onLimitReached { runSet(option) }
+            } else {
+                val act = context as? Activity
+                if (act != null && !isPremiumUser) {
+                    adManager.showInterstitialThen(act) { runSet(option) }
+                } else {
+                    runSet(option)
+                }
+            }
+        }
+    }
+}

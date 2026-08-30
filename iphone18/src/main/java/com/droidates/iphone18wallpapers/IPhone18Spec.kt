@@ -3,7 +3,7 @@ package com.droidates.iphone18wallpapers
 import com.droidates.wallpapers.core.config.AppSpec
 
 /**
- * Everything unique to iPhone 18 Wallpapers.
+ * Everything unique to iPhone Fold Wallpapers.
  *
  * Compare against `Pixel11Spec` — the two apps differ ONLY in this file, their
  * `build.gradle.kts`, icons/onboarding art and Play/AdMob identifiers. All screens
@@ -11,11 +11,11 @@ import com.droidates.wallpapers.core.config.AppSpec
  */
 object IPhone18Spec : AppSpec {
 
-    override val appName = "iPhone 18 Wallpapers"
-    override val toolbarTitle = "IPHONE 18 WALLPAPERS"
+    override val appName = "iPhone Fold Wallpapers"
+    override val toolbarTitle = "IPHONE FOLD WALLPAPERS"
     override val homeSectionTitle = "Official iPhone Drops"
     override val onboardingTagline = "Your home for official Apple & iPhone wallpapers."
-    override val deviceFamilyName = "iPhone 18"
+    override val deviceFamilyName = "iPhone Fold"
 
     // Original Droidates orange accent.
     override val brandAccent = 0xFFBF5000
@@ -52,10 +52,8 @@ object IPhone18Spec : AppSpec {
     override val billingLifetimeFallbackPrice = "₹199"
     override val billingLifetimeComparePrice = "₹299"
 
-    // TODO(iphone18): replace with the real unit IDs from a NEW AdMob app, and
-    //  update the App ID in this module's AndroidManifest.xml. These are Google's
-    //  official TEST units — they earn nothing and must not ship.
-    // Must match APPLICATION_ID in this module's AndroidManifest.xml.
+    // Real AdMob units for this app (publisher 6427410984085546). Supplied to the SDK
+    // through AppSpec — the GMA Next-Gen migration removed the manifest meta-data.
     override val adMobAppId = "ca-app-pub-6427410984085546~9795223799"
     override val adBannerId = "ca-app-pub-6427410984085546/6370984106"
     override val adInterstitialId = "ca-app-pub-6427410984085546/5057902430"

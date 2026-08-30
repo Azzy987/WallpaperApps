@@ -85,7 +85,8 @@ import com.droidates.wallpapers.core.ui.components.detail.ActionPhase
 import com.droidates.wallpapers.core.ui.components.detail.ActionButtonContent
 import com.droidates.wallpapers.core.ui.components.detail.rememberFavoriteBounce
 import com.droidates.wallpapers.core.ui.components.AdFreeOfferDialog
-import com.droidates.wallpapers.core.ui.components.detail.RollingCounterText
+import com.droidates.wallpapers.core.ui.components.WallpaperLimitGateDialog
+import com.droidates.wallpapers.core.utils.StatFormatter
 import com.droidates.wallpapers.core.model.Wallpaper
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
@@ -459,6 +460,11 @@ fun DetailScreen(
     // needs no permission — so nothing is requested. READ_MEDIA_IMAGES must NOT be used:
     // Play's Photo and Video Permissions policy rejects it for apps that don't browse
     // the user's gallery.
+    // Session gate state. pendingGatedAction holds the work the user was trying to do
+    // so it can resume after they watch a rewarded ad.
+    var showLimitGate by remember { mutableStateOf(false) }
+    var pendingGatedAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+
     val permissionToRequest = Manifest.permission.WRITE_EXTERNAL_STORAGE
     val needsRuntimePermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
 
@@ -469,25 +475,25 @@ fun DetailScreen(
             when (viewModel.permissionRequestType) {
                 PermissionRequestType.DOWNLOAD -> {
                     wallpaper?.let { wall ->
-                        viewModel.downloadWallpaper(
-                            context = context,
-                            wallpaper = wall,
-                            showToast = false,
-                            onComplete = {
-                                // Show interstitial ad after download completes if user is not premium
-                                activity?.let { act ->
-                                    // We should show ads for non-premium users, regardless of sign-in state
-                                    if (!isPremiumUser) {
-                                        debugLog { "Showing ad after download for non-premium user" }
-                                        adManager.showInterstitialAd(act)
-                                    } else {
-                                        debugLog { "User is premium, skipping ad after download" }
-                                    }
-                                }
-
-                                downloadCompleteWallpaper = wall
-                            }
-                        )
+                        val startDownload = {
+                            adManager.recordWallpaperAction()
+                            viewModel.downloadWallpaper(
+                                context = context,
+                                wallpaper = wall,
+                                showToast = false,
+                                onComplete = { downloadCompleteWallpaper = wall }
+                            )
+                        }
+                        // Ad first, then download — see runDownload for why the old
+                        // post-download ordering could lose the completion callback.
+                        val act = activity
+                        if (act != null && !isPremiumUser) {
+                            debugLog { "Showing ad before download for non-premium user" }
+                            adManager.showInterstitialThen(act) { startDownload() }
+                        } else {
+                            debugLog { "User is premium or no activity, skipping pre-download ad" }
+                            startDownload()
+                        }
                     }
                 }
 
@@ -626,27 +632,34 @@ fun DetailScreen(
     fun runDownload(imageUrl: String, skipInterstitial: Boolean = false) {
         checkAndRequestPermission(PermissionRequestType.DOWNLOAD) {
             wallpaper?.let { wall ->
-                viewModel.downloadWallpaper(
-                    context = context,
-                    wallpaper = wall,
-                    imageUrlOverride = imageUrl,
-                    showToast = false,
-                    onComplete = {
-                        activity?.let { act ->
-                            if (!isPremiumUser && !skipInterstitial) {
-                                debugLog { "Showing ad after download for non-premium user" }
-                                adManager.showInterstitialAd(act)
-                            } else {
-                                debugLog { "Skipping post-download ad (premium or reward already watched)" }
-                            }
-                        }
-                        downloadCompleteWallpaper = wall
+                // The actual download, run only once the ad (if any) is out of the way.
+                val startDownload = {
+                    adManager.recordWallpaperAction()
+                    viewModel.downloadWallpaper(
+                        context = context,
+                        wallpaper = wall,
+                        imageUrlOverride = imageUrl,
+                        showToast = false,
+                        onComplete = {
+                            downloadCompleteWallpaper = wall
 
-                        // Successful download — counts toward asking for notification
-                        // permission at a moment the user is happy.
-                        NotificationPermissionPrompt.recordSuccess(context)
-                    }
-                )
+                            // Successful download — counts toward asking for notification
+                            // permission at a moment the user is happy.
+                            NotificationPermissionPrompt.recordSuccess(context)
+                        }
+                    )
+                }
+
+                // Ad FIRST, then the download. Showing it afterwards used to race the
+                // activity teardown and could drop the completion callback entirely.
+                val act = activity
+                if (act != null && !isPremiumUser && !skipInterstitial) {
+                    debugLog { "Showing ad before download for non-premium user" }
+                    adManager.showInterstitialThen(act) { startDownload() }
+                } else {
+                    debugLog { "No pre-download ad (premium, reward already watched, or no activity)" }
+                    startDownload()
+                }
             }
         }
     }
@@ -654,11 +667,17 @@ fun DetailScreen(
     fun downloadStandardQuality() {
         wallpaper?.let { wall ->
             val standardUrl = cloudFrontFitInUrl(wall.imageUrl, width = 1080, height = 1920)
-            Toast.makeText(context, "Starting standard download...", Toast.LENGTH_SHORT).show()
-            if (!isPremiumUser) {
-                debugLog { "Pre-loading ad for standard download completion" }
-                adManager.loadInterstitialAd()
+
+            // Session gate. Only the free standard download is gated —
+            // downloadOriginalQuality already costs a rewarded ad, and charging twice
+            // for one download is exactly the kind of trade that loses users.
+            if (!adManager.hasFreeActionsLeft()) {
+                pendingGatedAction = { runDownload(standardUrl, skipInterstitial = true) }
+                showLimitGate = true
+                return
             }
+
+            Toast.makeText(context, "Starting standard download...", Toast.LENGTH_SHORT).show()
             runDownload(standardUrl)
         }
     }
@@ -688,13 +707,16 @@ fun DetailScreen(
                     }
                     adManager.showRewardAd(
                         activity = hostActivity,
-                        onRewarded = {
-                            rewardGranted = true
-                            // Reward already earned — do not stack an interstitial on top.
-                            runDownload(wall.imageUrl, skipInterstitial = true)
-                        },
+                        // Only record the reward here. Starting the download from
+                        // onRewarded runs it while the ad is still on screen and the
+                        // activity is backgrounded, which loses the download and drops
+                        // the user back on the quality sheet.
+                        onRewarded = { rewardGranted = true },
                         onAdDismissed = {
-                            if (!rewardGranted) {
+                            if (rewardGranted) {
+                                // Reward already earned — do not stack an interstitial.
+                                runDownload(wall.imageUrl, skipInterstitial = true)
+                            } else {
                                 Toast.makeText(
                                     context,
                                     "Watch full ad to unlock original quality.",
@@ -731,15 +753,11 @@ fun DetailScreen(
         }
     }
 
-    // Handle wallpaper setting with ad
-    fun handleWallpaperSet(option: WallpaperSetOption) {
+    // The actual wallpaper work, split out so the gate and the interstitial can both
+    // defer it without duplicating either path.
+    fun runWallpaperSet(option: WallpaperSetOption) {
         wallpaper?.let { wall ->
-            // First check if this is exclusive content that requires watching an ad
-            // Skip for premium users
-            if (wall.exclusive && !hasWatchedAd && !isPremiumUser) {
-                showUnlockDialog = true
-                return
-            }
+            adManager.recordWallpaperAction()
 
             if (option == WallpaperSetOption.EXTERNAL) {
                 // Show toast before starting the process
@@ -762,56 +780,8 @@ fun DetailScreen(
                                 // Show toast after preparation is complete
                                 Toast.makeText(context, "Opening system wallpaper picker...", Toast.LENGTH_SHORT).show()
 
-                                // Create a flag to track if user has returned to app
-                                var hasReturned = false
-
-                                // Register an activity lifecycle callback to show ad when user returns
-                                activity?.let { act ->
-                                    // Only show ad for non-premium users
-                                    if (!isPremiumUser) {
-                                        val lifecycleCallbacks =
-                                            object : Application.ActivityLifecycleCallbacks {
-                                                override fun onActivityResumed(activity: Activity) {
-                                                    // Only show ad if this is our activity and user is returning from external app
-                                                    if (activity == act && hasReturned) {
-                                                        adManager.showInterstitialAd(act)
-                                                        // Remove callback after showing ad
-                                                        activity.application.unregisterActivityLifecycleCallbacks(
-                                                            this
-                                                        )
-                                                    }
-                                                    // Set flag to true after first pause-resume cycle
-                                                    hasReturned = true
-                                                }
-
-                                                // Empty implementations for other callbacks
-                                                override fun onActivityCreated(
-                                                    activity: Activity,
-                                                    savedInstanceState: Bundle?
-                                                ) {}
-
-                                                override fun onActivityStarted(activity: Activity) {}
-                                                override fun onActivityPaused(activity: Activity) {}
-                                                override fun onActivityStopped(activity: Activity) {}
-                                                override fun onActivitySaveInstanceState(
-                                                    activity: Activity,
-                                                    outState: Bundle
-                                                ) {}
-
-                                                override fun onActivityDestroyed(activity: Activity) {
-                                                    // Clean up in case activity is destroyed
-                                                    activity.application.unregisterActivityLifecycleCallbacks(
-                                                        this
-                                                    )
-                                                }
-                                            }
-
-                                        // Register the callback before opening external app
-                                        act.application.registerActivityLifecycleCallbacks(
-                                            lifecycleCallbacks
-                                        )
-                                    }
-                                }
+                                // No post-apply ad here: the interstitial already ran
+                                // before this work started (see handleWallpaperSet).
 
                                 // Open system wallpaper picker with file
                                 openDirectWallpaperPicker(file, context, { message ->
@@ -842,26 +812,6 @@ fun DetailScreen(
                     wallpaper = wall,
                     option = option,
                     onComplete = {
-                        activity?.let { act ->
-                            if (!isPremiumUser) {
-                                // WALLPAPER AD CRASH FIX: Add delay and lifecycle checks before showing ad
-                                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                                    // Wait for wallpaper setting process to complete fully
-                                    kotlinx.coroutines.delay(800)
-                                    
-                                    // Double-check activity state before showing ad
-                                    if (!act.isDestroyed && !act.isFinishing && !act.isChangingConfigurations) {
-                                        try {
-                                            adManager.showInterstitialAd(act)
-                                        } catch (e: Exception) {
-                                            Log.e("DetailScreen", "Error showing ad after wallpaper set: ${e.message}")
-                                        }
-                                    } else {
-                                        Log.w("DetailScreen", "Activity not ready for ad display after wallpaper set")
-                                    }
-                                }
-                            }
-                        }
 
                         // Show toast after completion
                         val message = when (option) {
@@ -877,6 +827,39 @@ fun DetailScreen(
                         NotificationPermissionPrompt.recordSuccess(context)
                     }
                 )
+            }
+        }
+    }
+
+    // Handle wallpaper setting with ad
+    //
+    // Ad ordering: the interstitial is shown BEFORE the wallpaper work starts. The
+    // apply paths below hand off to the system wallpaper picker, and an ad fired on
+    // the way back used to land on a half-restored activity — the exact case where
+    // the dismissal callback is skipped.
+    fun handleWallpaperSet(option: WallpaperSetOption) {
+        wallpaper?.let { wall ->
+            // First check if this is exclusive content that requires watching an ad
+            // Skip for premium users
+            if (wall.exclusive && !hasWatchedAd && !isPremiumUser) {
+                showUnlockDialog = true
+                return
+            }
+
+            // Session gate: after the free allowance the user is offered premium or a
+            // rewarded ad. Checked before the interstitial so they are never shown a
+            // full-screen ad and then immediately asked to watch another.
+            if (!adManager.hasFreeActionsLeft()) {
+                pendingGatedAction = { runWallpaperSet(option) }
+                showLimitGate = true
+                return
+            }
+
+            val act = activity
+            if (act != null && !isPremiumUser) {
+                adManager.showInterstitialThen(act) { runWallpaperSet(option) }
+            } else {
+                runWallpaperSet(option)
             }
         }
     }
@@ -908,6 +891,7 @@ fun DetailScreen(
     val interstitialShownCount by adManager.interstitialShownCount.collectAsState()
     var adFreeOfferShownThisSession by rememberSaveable { mutableStateOf(false) }
     var showAdFreeOffer by remember { mutableStateOf(false) }
+
     LaunchedEffect(interstitialShownCount) {
         if (interstitialShownCount >= 2 &&
             !adFreeOfferShownThisSession &&
@@ -926,6 +910,24 @@ fun DetailScreen(
             }
         }
     }
+    if (showLimitGate) {
+        WallpaperLimitGateDialog(
+            adManager = adManager,
+            activity = activity,
+            freeActionsUsed = adManager.sessionActionsUsed(),
+            onGoPremium = { navigationState.navigateToPremium() },
+            onDismiss = {
+                showLimitGate = false
+                pendingGatedAction = null
+            },
+            onProceed = {
+                val action = pendingGatedAction
+                pendingGatedAction = null
+                action?.invoke()
+            }
+        )
+    }
+
     if (showAdFreeOffer) {
         AdFreeOfferDialog(
             adManager = adManager,
@@ -1707,10 +1709,9 @@ fun DetailScreen(
                                                         modifier = Modifier.weight(1f),
                                                         verticalArrangement = Arrangement.spacedBy(16.dp)
                                                     ) {
-                                                        AnimatedCounterStatItem(
+                                                        StatItem(
                                                             icon = Icons.Rounded.ArrowCircleDown,
-                                                            count = localDownloads ?: currentWallpaper.downloads,
-                                                            label = "downloads",
+                                                            value = "${StatFormatter.formatStatValue(localDownloads ?: currentWallpaper.downloads)} downloads",
                                                             iconColor = Color.White
                                                         )
                                                         StatItem(
@@ -1731,10 +1732,9 @@ fun DetailScreen(
                                                         modifier = Modifier.weight(1f),
                                                         verticalArrangement = Arrangement.spacedBy(16.dp)
                                                     ) {
-                                                        AnimatedCounterStatItem(
+                                                        StatItem(
                                                             icon = Icons.Rounded.RemoveRedEye,
-                                                            count = localViews ?: currentWallpaper.views,
-                                                            label = "views",
+                                                            value = "${StatFormatter.formatStatValue(localViews ?: currentWallpaper.views)} views",
                                                             iconColor = Color.White
                                                         )
                                                         StatItem(
@@ -1925,8 +1925,12 @@ fun DetailScreen(
         SetWallpaperBottomSheet(
             onDismiss = { showSetWallpaperSheet = false },
             onOptionSelected = { option ->
-                                handleWallpaperSet(option)
-                            },
+                // Close the sheet BEFORE the interstitial. The ad now runs ahead of the
+                // apply, so leaving the sheet up means the user dismisses the ad and
+                // lands back on the sheet with nothing applied.
+                showSetWallpaperSheet = false
+                handleWallpaperSet(option)
+            },
             isSettingWallpaper = isSettingWallpaper,
             progress = downloadProgress,
             showExternalOption = true
@@ -2323,44 +2327,6 @@ private fun StatItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-    }
-}
-
-// Animated counter StatItem: new number enters from below, old exits upward (clock/odometer flip)
-@Composable
-private fun AnimatedCounterStatItem(
-    icon: ImageVector,
-    count: Int,
-    label: String,
-    iconColor: Color,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconColor,
-            modifier = Modifier.size(22.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        // Only the digits roll; the label stays put so the row does not shift.
-        RollingCounterText(
-            count = count,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = label,
-            color = Color.White,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 
