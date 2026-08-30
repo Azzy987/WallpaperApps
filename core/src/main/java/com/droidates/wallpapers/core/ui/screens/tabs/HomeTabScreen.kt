@@ -85,7 +85,12 @@ fun HomeTabScreen(
     favoritesViewModel: FavoritesViewModel = hiltViewModel(),
     adManager: AdManager = LocalAdManager.current,
     sortTrigger: Int = 0,
-    currentSortOption: com.droidates.wallpapers.core.utils.SortOption = com.droidates.wallpapers.core.utils.SortOption.LAUNCH_YEAR,
+    currentSortOption: com.droidates.wallpapers.core.utils.SortOption =
+        // Not LAUNCH_YEAR unconditionally: apps without that field would order by it
+        // and Firestore would return nothing.
+        if (com.droidates.wallpapers.core.config.AppConfig.SUPPORTS_LAUNCH_YEAR_SORT)
+            com.droidates.wallpapers.core.utils.SortOption.LAUNCH_YEAR
+        else com.droidates.wallpapers.core.utils.SortOption.LATEST,
 ) {
     var isTabVisible by remember { mutableStateOf(true) } // Start as visible for Home tab
 

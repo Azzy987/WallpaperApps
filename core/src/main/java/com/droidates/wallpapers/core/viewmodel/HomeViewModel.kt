@@ -54,7 +54,11 @@ class HomeViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    private val _currentSortOption = MutableStateFlow(SortOption.LAUNCH_YEAR)
+    // Apps whose wallpapers lack `launchYear` must not order by it — Firestore drops
+    // documents missing the ordered field, which returns an empty Home tab.
+    private val homeDefaultSort =
+        if (AppConfig.SUPPORTS_LAUNCH_YEAR_SORT) SortOption.LAUNCH_YEAR else SortOption.LATEST
+    private val _currentSortOption = MutableStateFlow(homeDefaultSort)
     val currentSortOption = _currentSortOption.asStateFlow()
 
     private var paginator: FirestorePaginator? = null
@@ -77,7 +81,7 @@ class HomeViewModel @Inject constructor(
             _wallpapers.collect { wallpapers ->
                 if (hasSavedToCache) return@collect
                 if (wallpapers.isNotEmpty()
-                    && _currentSortOption.value == SortOption.LAUNCH_YEAR
+                    && _currentSortOption.value == homeDefaultSort
                 ) {
                     hasSavedToCache = true
                     WallpaperDiskCache.getInstance(context).saveCollectionPage(CACHE_KEY_HOME, wallpapers)
@@ -133,7 +137,7 @@ class HomeViewModel @Inject constructor(
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error loading sort option, falling back to ViewModel default.", e)
-                    _currentSortOption.value = SortOption.LAUNCH_YEAR
+                    _currentSortOption.value = homeDefaultSort
                     hasLoadedSortOption = true
                 }
             }
@@ -141,7 +145,7 @@ class HomeViewModel @Inject constructor(
             // Step 2: Try disk cache before hitting Firestore (only for default sort, first page)
             val diskCache = WallpaperDiskCache.getInstance(context)
             val cachedWallpapers = diskCache.loadCollectionPage(CACHE_KEY_HOME)
-            if (cachedWallpapers != null && _currentSortOption.value == SortOption.LAUNCH_YEAR) {
+            if (cachedWallpapers != null && _currentSortOption.value == homeDefaultSort) {
                 Log.d(TAG, "Serving ${cachedWallpapers.size} home wallpapers from cache (no Firestore read)")
                 _wallpapers.value = cachedWallpapers
                 _isLoading.value = false
@@ -159,7 +163,7 @@ class HomeViewModel @Inject constructor(
 
             // Step 3: Create paginator with loaded sort option (recreate if needed)
             if (paginator == null || _wallpapers.value.isEmpty()) {
-                val effectiveSortOption = if (hasLoadedSortOption) _currentSortOption.value else SortOption.LAUNCH_YEAR
+                val effectiveSortOption = if (hasLoadedSortOption) _currentSortOption.value else homeDefaultSort
                 paginator = createPaginator(effectiveSortOption)
                 Log.d(TAG, "Paginator created with sort option: $effectiveSortOption")
             }

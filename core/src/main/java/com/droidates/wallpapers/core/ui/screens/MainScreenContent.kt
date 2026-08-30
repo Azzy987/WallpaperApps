@@ -35,7 +35,12 @@ fun MainScreenContent(
     navigationState: NavigationState,
     scrollBehavior: TopAppBarScrollBehavior,
     sortTrigger: Int = 0,
-    currentSortOption: com.droidates.wallpapers.core.utils.SortOption = com.droidates.wallpapers.core.utils.SortOption.LAUNCH_YEAR,
+    currentSortOption: com.droidates.wallpapers.core.utils.SortOption =
+        // Not LAUNCH_YEAR unconditionally: apps without that field would order by it
+        // and Firestore would return nothing.
+        if (com.droidates.wallpapers.core.config.AppConfig.SUPPORTS_LAUNCH_YEAR_SORT)
+            com.droidates.wallpapers.core.utils.SortOption.LAUNCH_YEAR
+        else com.droidates.wallpapers.core.utils.SortOption.LATEST,
 ) {
     val currentTab = navigationState.currentTabIndex
 

@@ -17,6 +17,8 @@ object S25UltraSpec : AppSpec {
     override val brandOnAccentContainer = 0xFF250040
 
     // ── Firestore ───────────────────────────────────────────────────────────
+    override val supportsLaunchYearSort = true
+
     override val categoryBrandName = "Samsung"
     override val collectionHome = "Samsung"
     override val documentDevicesBrand = "Samsung"

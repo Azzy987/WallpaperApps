@@ -17,6 +17,8 @@ object Xiaomi17UltraSpec : AppSpec {
     override val brandOnAccentContainer = 0xFF2E1500
 
     // ── Firestore ───────────────────────────────────────────────────────────
+    override val supportsLaunchYearSort = true
+
     override val categoryBrandName = "Xiaomi"
     override val collectionHome = "Xiaomi"
     override val documentDevicesBrand = "Xiaomi"

@@ -19,6 +19,8 @@ object SamsungFold8Spec : AppSpec {
     // ── Firestore ───────────────────────────────────────────────────────────
     // Shares the Samsung brand collections with :s25ultra and :s26ultra — only the
     // per-app sub-collections and the update doc are distinct.
+    override val supportsLaunchYearSort = true
+
     override val categoryBrandName = "Samsung"
     override val collectionHome = "Samsung"
     override val documentDevicesBrand = "Samsung"

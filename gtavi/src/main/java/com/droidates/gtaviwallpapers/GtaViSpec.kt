@@ -25,6 +25,11 @@ object GtaViSpec : AppSpec {
     override val brandOnAccentContainer = 0xFF3D0022
 
     // ── Firestore ───────────────────────────────────────────────────────────
+    // GTA VI wallpapers carry no `launchYear` field, and Firestore's orderBy drops
+    // documents that lack the ordered field — sorting by it returned an empty Home tab.
+    // Also hides the Release Date option, which is meaningless for a game.
+    override val supportsLaunchYearSort = false
+
     override val categoryBrandName = "GTAVI"
     override val collectionHome = "GTAVI"
     override val documentDevicesBrand = "GTAVI"
@@ -39,8 +44,9 @@ object GtaViSpec : AppSpec {
     // no code change; it costs one prefix query that matches zero documents.
     override val seriesPrefixRanges = listOf("GTA" to "GTB")
 
-    override val documentBannersApp = "GTAWallpapers"
-    override val collectionBannersSub = "GtaViBanners"
+    // Live path is Banners/GTAVI/GTAVIBanners.
+    override val documentBannersApp = "GTAVI"
+    override val collectionBannersSub = "GTAVIBanners"
     override val documentUsersApp = "GTAWallpapers"
     override val collectionUsersSub = "GtaViAndroidUsers"
     override val documentAppUpdate = "GtaViWallpapers"

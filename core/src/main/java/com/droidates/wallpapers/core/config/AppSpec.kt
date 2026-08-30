@@ -34,6 +34,16 @@ interface AppSpec {
     /** Content colour drawn on top of [brandAccentContainer]. */
     val brandOnAccentContainer: Long
 
+    /**
+     * Whether wallpapers in this app carry a `launchYear` field.
+     *
+     * Firestore's orderBy silently DROPS documents that lack the ordered field, so an
+     * app whose wallpapers have no `launchYear` returns an empty Home tab rather than an
+     * error. Set false for catalogues that are not device-release based (a game, say);
+     * the Release Date sort is then hidden and the default sort falls back to Latest.
+     */
+    val supportsLaunchYearSort: Boolean
+
     /** Brand name used to filter categories in Firestore (`categoryType == "brand"`). */
     val categoryBrandName: String
 

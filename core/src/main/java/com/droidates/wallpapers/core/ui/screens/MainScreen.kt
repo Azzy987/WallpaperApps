@@ -175,8 +175,12 @@ fun MainScreen(
     // Get current sort option from SharedPreferences based on the selected tab
     val isHomeTab = currentTab == 0
     
-    // Initialize with LAUNCH_YEAR as default for home screen (Release Date)
-    var currentSortOption by remember { mutableStateOf(SortOption.LAUNCH_YEAR) }
+    // Default for the home screen; apps without launchYear data start on Latest.
+    var currentSortOption by remember {
+        mutableStateOf(
+            if (AppConfig.SUPPORTS_LAUNCH_YEAR_SORT) SortOption.LAUNCH_YEAR else SortOption.LATEST
+        )
+    }
     var sortOptionLoaded by remember { mutableStateOf(false) }
     
     // Add state to trigger immediate sort changes
@@ -220,7 +224,8 @@ fun MainScreen(
         SortDialog(
             currentSortOption = currentSortOption,
             onDismiss = { showSortDialog = false },
-            showLaunchYearOption = isHomeTab,
+            // Also gated on the app actually having launchYear data.
+            showLaunchYearOption = isHomeTab && AppConfig.SUPPORTS_LAUNCH_YEAR_SORT,
             onSortOptionSelected = { selectedOption ->
                 // Update our local state
                 currentSortOption = selectedOption

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.droidates.wallpapers.core.R
+import com.droidates.wallpapers.core.config.AppConfig
 import com.google.firebase.firestore.Query
 
 enum class SortOption(@StringRes val displayNameResId: Int) {
@@ -49,7 +50,12 @@ object SortPreferences {
      * Defaults to LAUNCH_YEAR for home screen and LATEST for trending screen if not found or on first launch.
      */
     fun getSortOption(context: Context, isHomeScreen: Boolean): SortOption {
-        val defaultSortOption = if (isHomeScreen) SortOption.LAUNCH_YEAR else SortOption.LATEST
+        // Apps whose wallpapers have no `launchYear` cannot sort by it: Firestore's
+        // orderBy drops documents missing the field, so the Home tab would come back
+        // empty. Those apps default to Latest instead.
+        val homeDefault =
+            if (AppConfig.SUPPORTS_LAUNCH_YEAR_SORT) SortOption.LAUNCH_YEAR else SortOption.LATEST
+        val defaultSortOption = if (isHomeScreen) homeDefault else SortOption.LATEST
         val key = if (isHomeScreen) KEY_HOME_SORT_OPTION else KEY_TRENDING_SORT_OPTION
         val prefs = getPrefs(context)
 
@@ -59,10 +65,17 @@ object SortPreferences {
         }
 
         val savedOption = getPrefs(context).getString(key, defaultSortOption.name) ?: defaultSortOption.name
-        return try {
+        val resolved = try {
             SortOption.valueOf(savedOption)
         } catch (e: IllegalArgumentException) {
             defaultSortOption
+        }
+        // A LAUNCH_YEAR preference can already be on disk from an earlier install or a
+        // shared prefs restore; honouring it would silently empty the grid.
+        return if (resolved == SortOption.LAUNCH_YEAR && !AppConfig.SUPPORTS_LAUNCH_YEAR_SORT) {
+            defaultSortOption
+        } else {
+            resolved
         }
     }
 

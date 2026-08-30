@@ -17,6 +17,8 @@ object IPhone17Spec : AppSpec {
     override val brandOnAccentContainer = 0xFF3A1400
 
     // ── Firestore ───────────────────────────────────────────────────────────
+    override val supportsLaunchYearSort = true
+
     override val categoryBrandName = "Apple"
     override val collectionHome = "Apple"
     override val documentDevicesBrand = "Apple"
