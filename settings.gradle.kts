@@ -38,6 +38,7 @@ include(":ios27")
 include(":iphone17")
 include(":samsungfold8")
 include(":gtavi")
+include(":redmi")
 
 // Legacy flavor-based module (OnePlus 7 / 7T), UNREGISTERED.
 //
