@@ -60,13 +60,19 @@ object RedmiSpec : AppSpec {
     override val billingLifetimeFallbackPrice = "₹199"
     override val billingLifetimeComparePrice = "₹299"
 
-    // TODO(release): replace with this app's own AdMob ids before publishing.
-    // These are Google's public TEST ids and earn nothing;
-    // tools/check_release_ready.py fails while they are here, so they cannot ship.
-    override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
-    override val adBannerId = "ca-app-pub-3940256099942544/6300978111"
-    override val adInterstitialId = "ca-app-pub-3940256099942544/1033173712"
-    override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
+    // Must match APPLICATION_ID in this module's AndroidManifest.xml.
+    //
+    // The AdMob app carries a live "Restricted ad serving" enforcement (Ads Disguised as
+    // Content, +1 more) inherited from the 2019 build. Ads will not serve until that is
+    // resolved in the AdMob console, no matter what these ids say — see the note in
+    // NEW_APP_GUIDE.md about reviving removed listings.
+    //
+    // The account also has a redmiNote8_native unit; :core has no native placement and
+    // AppSpec has no field for one, so it is deliberately unused.
+    override val adMobAppId = "ca-app-pub-6427410984085546~4971727097"
+    override val adBannerId = "ca-app-pub-6427410984085546/2595422445"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/1938369642"
+    override val adRewardedId = "ca-app-pub-6427410984085546/2953262323"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG

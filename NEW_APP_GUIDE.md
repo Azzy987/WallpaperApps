@@ -115,6 +115,28 @@ revenue and risks a policy strike.
 > use live IDs, including debug on a real phone. Add your device's test ID to
 > `MobileAdsInitializer.kt` before testing on hardware.
 
+## 6a. Reviving a removed listing
+
+Reusing the package of an app Google removed keeps its rating and review history, but
+it also inherits everything that was wrong with it:
+
+- **The AdMob app may carry a live enforcement.** A removed app often has a
+  "Restricted ad serving" or "Ads disguised as content" policy action attached to it.
+  Ad units under that app serve nothing until the enforcement is cleared in the AdMob
+  console — the ids in the spec are irrelevant while it stands. Clearing it usually
+  means fixing the flagged behaviour, publishing the corrected build, then requesting
+  review from the AdMob policy centre.
+- **The old signing key is required, or a key reset.** If the original keystore or its
+  password is lost, request an upload key reset in Play Console and attach the
+  certificate exported from a newly generated keystore.
+- **versionCode must exceed the removed listing's last release.** Play remembers codes
+  from removed apps and rejects a reused one.
+- **The applicationId can never change.** It stays whatever the old listing used, even
+  when the store name changes — so the package will not match the new brand.
+
+Check the old listing's rating before deciding. Below roughly 3.5 stars the inherited
+reviews are a handicap, and a fresh listing is the better trade.
+
 ## 7. Firestore data
 
 The app builds and runs without this, but shows empty tabs:
