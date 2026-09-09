@@ -113,7 +113,9 @@ fun WallpaperAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            // Edge-to-edge itself is set once in MainActivity via enableEdgeToEdge().
+            // setDecorFitsSystemWindows() is deprecated and Play Console flags it; calling
+            // it here only repeated what enableEdgeToEdge already did.
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

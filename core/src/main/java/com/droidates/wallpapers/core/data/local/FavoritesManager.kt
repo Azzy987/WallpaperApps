@@ -1,5 +1,9 @@
 package com.droidates.wallpapers.core.data.local
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import android.util.Log
 import android.content.Context
 import android.widget.Toast
 import com.droidates.wallpapers.core.config.AppConfig
@@ -14,8 +18,14 @@ class FavoritesManager @Inject constructor(
     private val prefs = context.getSharedPreferences(AppConfig.FAVORITES_PREFS_KEY, Context.MODE_PRIVATE)
 
     init {
-        // Migrate old favorites from S25 app if they exist
-        migrateOldFavorites()
+        // Off the main thread: Hilt can construct this during Activity creation, and the
+        // migration does a SharedPreferences read plus a write. Doing that inline blocked
+        // the main thread and showed up as nativePollOnce ANRs. It is a one-shot upgrade
+        // path, so nothing observes the result immediately.
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching { migrateOldFavorites() }
+                .onFailure { Log.w("FavoritesManager", "Favorites migration failed", it) }
+        }
     }
 
     private fun migrateOldFavorites() {

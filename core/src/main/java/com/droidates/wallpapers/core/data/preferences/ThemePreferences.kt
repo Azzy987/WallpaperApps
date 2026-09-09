@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.droidates.wallpapers.core.ui.theme.ThemeMode
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,7 +21,11 @@ import javax.inject.Singleton
 class ThemePreferences @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+    // See UserPreferences: a corrupted file otherwise crashes every read permanently.
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+        name = "settings",
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
+    )
     private val themeKey = stringPreferencesKey("theme_mode")
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data

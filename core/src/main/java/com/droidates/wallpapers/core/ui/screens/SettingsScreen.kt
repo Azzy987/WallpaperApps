@@ -28,6 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import com.droidates.wallpapers.core.utils.findActivity
 import com.droidates.wallpapers.core.utils.ConsentManager
 import androidx.compose.foundation.LocalIndication
@@ -85,8 +89,13 @@ fun SettingsScreen(
     val context = LocalContext.current
     // UMP privacy-options entry point: only rendered when UMP reports it is required.
     val settingsActivity = remember(context) { context.findActivity() }
-    val showPrivacyOptions = remember(context) {
-        ConsentManager.isPrivacyOptionsRequired(context)
+    // UMP touches disk to read the stored consent state, so this must not run during
+    // composition on the main thread — it contributed to nativePollOnce ANRs.
+    var showPrivacyOptions by remember { mutableStateOf(false) }
+    LaunchedEffect(context) {
+        showPrivacyOptions = withContext(Dispatchers.IO) {
+            ConsentManager.isPrivacyOptionsRequired(context)
+        }
     }
     val refreshRateManager = remember { RefreshRateManager(context) }
     val themeMode by viewModel.themeMode.collectAsState()

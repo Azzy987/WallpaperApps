@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.preferencesDataStore
 import com.droidates.wallpapers.core.utils.SortOption
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,7 +22,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // Define the DataStore at the file level
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+// A corrupted preferences file used to crash the app on every read with
+// InvalidProtocolBufferException — and permanently, since the bad file stays on disk.
+// The handler discards it and starts from empty instead: losing settings is recoverable,
+// an app that cannot open is not.
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "user_preferences",
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
+)
 
 @Singleton
 class UserPreferences @Inject constructor(

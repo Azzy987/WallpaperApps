@@ -99,7 +99,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.outlined.ReportProblem
-import androidx.core.view.WindowCompat
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
@@ -565,7 +564,14 @@ fun DetailScreen(
                 onPermissionGranted(type, onGranted)
             }
 
-            shouldShowRequestPermissionRationale(context as Activity, permissionToRequest) -> {
+            // `context as Activity` crashed here in production (IllegalStateException /
+            // ClassCastException): the Compose LocalContext is not always the Activity —
+            // several OEM skins hand back a ContextWrapper. findActivity() unwraps the
+            // wrapper chain instead of casting, and when there is genuinely no Activity
+            // we fall through to requesting the permission, which is what the rationale
+            // branch would have led to anyway.
+            activity != null &&
+                shouldShowRequestPermissionRationale(activity, permissionToRequest) -> {
                 debugLog { "Showing permission rationale for: $type" }
                 showPermissionRationaleDialog = true
             }
@@ -584,11 +590,6 @@ fun DetailScreen(
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
         )
-
-        // Enable edge-to-edge display
-        activity?.window?.let { window ->
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
 
         // Preload only interstitial on launch; reward ad is loaded on demand
         isLoadingRewardAd = false
@@ -2527,20 +2528,28 @@ private fun findDownloadedWallpaperUri(context: Context, fileName: String): Uri?
     val selectionArgs = arrayOf(fileName, relativePath, relativePathWithSlash)
     val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC, ${MediaStore.Images.Media.DATE_MODIFIED} DESC"
 
-    return resolver.query(
-        collection,
-        arrayOf(MediaStore.Images.Media._ID),
-        selection,
-        selectionArgs,
-        sortOrder
-    )?.use { cursor ->
-        if (cursor.moveToFirst()) {
-            val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-            Uri.withAppendedPath(collection, id.toString())
-        } else {
-            null
+    // MediaStore queries are not safe to run unguarded: RELATIVE_PATH does not exist
+    // below API 29, and some OEM MediaStore implementations throw SQLiteException on
+    // this selection even above it. The caller already falls back to the whole images
+    // collection, so returning null degrades to "open the gallery" rather than crashing.
+    return runCatching {
+        resolver.query(
+            collection,
+            arrayOf(MediaStore.Images.Media._ID),
+            selection,
+            selectionArgs,
+            sortOrder
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                Uri.withAppendedPath(collection, id.toString())
+            } else {
+                null
+            }
         }
-    }
+    }.onFailure {
+        Log.w("DetailScreen", "MediaStore lookup for $fileName failed", it)
+    }.getOrNull()
 }
 
 
