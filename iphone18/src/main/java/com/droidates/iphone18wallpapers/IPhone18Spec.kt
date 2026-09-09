@@ -3,7 +3,7 @@ package com.droidates.iphone18wallpapers
 import com.droidates.wallpapers.core.config.AppSpec
 
 /**
- * Everything unique to iPhone Fold Wallpapers.
+ * Everything unique to iPhone Duo Wallpapers.
  *
  * Compare against `Pixel11Spec` — the two apps differ ONLY in this file, their
  * `build.gradle.kts`, icons/onboarding art and Play/AdMob identifiers. All screens
@@ -11,11 +11,11 @@ import com.droidates.wallpapers.core.config.AppSpec
  */
 object IPhone18Spec : AppSpec {
 
-    override val appName = "iPhone Fold Wallpapers"
-    override val toolbarTitle = "IPHONE FOLD WALLPAPERS"
+    override val appName = "iPhone Duo Wallpapers"
+    override val toolbarTitle = "IPHONE DUO WALLPAPERS"
     override val homeSectionTitle = "Official iPhone Drops"
     override val onboardingTagline = "Your home for official Apple & iPhone wallpapers."
-    override val deviceFamilyName = "iPhone Fold"
+    override val deviceFamilyName = "iPhone Duo"
 
     // Original Droidates orange accent.
     // Material Blue. The four values are one palette, not independent colours: accent
@@ -43,6 +43,8 @@ object IPhone18Spec : AppSpec {
 
     override val documentBannersApp = "iPhoneWallpapers"
     override val documentUsersApp = "iPhoneWallpapers"
+    // Firestore path, not a display name: stays "iPhoneFoldBanners" through the
+    // rename to iPhone Duo, because the documents live under that name already.
     override val collectionBannersSub = "iPhoneFoldBanners"
     override val collectionUsersSub = "iPhone18AndroidUsers"
     override val documentAppUpdate = "iphone18wallpapers"
