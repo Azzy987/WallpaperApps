@@ -12,10 +12,12 @@ object OnePlus7Spec : AppSpec {
     override val onboardingTagline = "Your home for official OnePlus wallpapers."
     override val deviceFamilyName = "OnePlus 7"
 
-    override val brandAccent = 0xFFC62828
+    // Rose red, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFFA21639
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDAD6
-    override val brandOnAccentContainer = 0xFF410002
+    override val brandAccentContainer = 0xFFF0DBE0
+    override val brandOnAccentContainer = 0xFF310711
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true

@@ -11,10 +11,12 @@ object IOS27Spec : AppSpec {
     override val onboardingTagline = "Your home for official Apple & iOS wallpapers."
     override val deviceFamilyName = "iOS 27"
 
-    override val brandAccent = 0xFF37474F
+    // Indigo, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFF122BA5
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFD7E3EA
-    override val brandOnAccentContainer = 0xFF0B1B22
+    override val brandAccentContainer = 0xFFDADEF1
+    override val brandOnAccentContainer = 0xFF050D33
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true

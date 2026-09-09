@@ -11,10 +11,12 @@ object S26UltraSpec : AppSpec {
     override val onboardingTagline = "Your home for official Samsung wallpapers."
     override val deviceFamilyName = "S26 Ultra"
 
-    override val brandAccent = 0xFF1565C0
+    // Steel blue, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFF296D8E
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFD6E3FF
-    override val brandOnAccentContainer = 0xFF001B3D
+    override val brandAccentContainer = 0xFFDEE8ED
+    override val brandOnAccentContainer = 0xFF0D212B
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true

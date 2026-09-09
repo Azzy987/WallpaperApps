@@ -17,11 +17,12 @@ object Pixel11Spec : AppSpec {
     override val onboardingTagline = "Your home for official Google & Pixel wallpapers."
     override val deviceFamilyName = "Pixel 11"
 
-    // Pink accent. Same colour in light and dark; container is the light tonal step.
-    override val brandAccent = 0xFFC2185B            // pink 700
+    // Rose, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFF8E294B
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFD9E2   // pink 50-ish
-    override val brandOnAccentContainer = 0xFF3E001D
+    override val brandAccentContainer = 0xFFEDDEE3
+    override val brandOnAccentContainer = 0xFF2B0D17
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Home wallpapers are SHARED by all Pixel apps.

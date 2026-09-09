@@ -11,10 +11,12 @@ object SamsungFold8Spec : AppSpec {
     override val onboardingTagline = "Your home for official Samsung wallpapers."
     override val deviceFamilyName = "Galaxy Z Fold 8"
 
-    override val brandAccent = 0xFF1565C0
+    // Violet, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFF5C298E
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFD3E4FF
-    override val brandOnAccentContainer = 0xFF001B3D
+    override val brandAccentContainer = 0xFFE6DEED
+    override val brandOnAccentContainer = 0xFF1C0D2B
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Shares the Samsung brand collections with :s25ultra and :s26ultra — only the

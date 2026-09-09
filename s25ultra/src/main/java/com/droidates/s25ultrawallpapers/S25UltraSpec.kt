@@ -11,10 +11,12 @@ object S25UltraSpec : AppSpec {
     override val onboardingTagline = "Your home for official Samsung wallpapers."
     override val deviceFamilyName = "S25 Ultra"
 
-    override val brandAccent = 0xFF6A1B9A
+    // Deep indigo, sampled from the launcher icon. The four values are one palette: accent and container are
+    // the light/dark pair, and the two "on" colours must stay legible on them.
+    override val brandAccent = 0xFF2E17A1
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFEFDBFF
-    override val brandOnAccentContainer = 0xFF250040
+    override val brandAccentContainer = 0xFFDEDBF0
+    override val brandOnAccentContainer = 0xFF0E0731
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true
