@@ -5,11 +5,11 @@ import com.droidates.wallpapers.core.config.AppSpec
 /** Everything unique to Xiaomi 17 Ultra Wallpapers. All screens and logic come from `:core`. */
 object Xiaomi17UltraSpec : AppSpec {
 
-    override val appName = "Xiaomi 17 Ultra Wallpapers"
-    override val toolbarTitle = "XIAOMI 17 ULTRA WALLPAPERS"
+    override val appName = "Xiaomi 18 Fold Wallpapers"
+    override val toolbarTitle = "XIAOMI 18 FOLD WALLPAPERS"
     override val homeSectionTitle = "Official Xiaomi Drops"
     override val onboardingTagline = "Your home for official Xiaomi wallpapers."
-    override val deviceFamilyName = "Xiaomi 17 Ultra"
+    override val deviceFamilyName = "Xiaomi 18 Fold"
 
     override val brandAccent = 0xFFEF6C00
     override val brandOnAccent = 0xFFFFFFFF
