@@ -11,10 +11,12 @@ object IPhone17Spec : AppSpec {
     override val onboardingTagline = "Your home for official Apple & iPhone wallpapers."
     override val deviceFamilyName = "iPhone 18"
 
-    override val brandAccent = 0xFFBF5000
+    // Crimson, matching the red iPhone hero image and launcher icon. The four values are one palette: accent and container are the
+    // light/dark pair, and the two "on" colours must stay legible on top of them.
+    override val brandAccent = 0xFFC2185B
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDBC9
-    override val brandOnAccentContainer = 0xFF3A1400
+    override val brandAccentContainer = 0xFFFFD9E2
+    override val brandOnAccentContainer = 0xFF3E001D
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true

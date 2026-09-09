@@ -19,11 +19,12 @@ object RedmiSpec : AppSpec {
     override val onboardingTagline = "Your home for official Redmi wallpapers."
     override val deviceFamilyName = "Redmi 17 Pro Max"
 
-    // Redmi orange.
-    override val brandAccent = 0xFFFF6900
+    // Green, matching the Redmi hero image and launcher icon. The four values are one palette: accent and container are the
+    // light/dark pair, and the two "on" colours must stay legible on top of them.
+    override val brandAccent = 0xFF2E7D32
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDBC7
-    override val brandOnAccentContainer = 0xFF351000
+    override val brandAccentContainer = 0xFFB8F2B9
+    override val brandOnAccentContainer = 0xFF002105
 
     override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
