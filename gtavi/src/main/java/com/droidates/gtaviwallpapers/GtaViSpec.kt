@@ -18,12 +18,11 @@ object GtaViSpec : AppSpec {
     override val onboardingTagline = "Your home for GTA VI wallpapers."
     override val deviceFamilyName = "GTA VI"
 
-    // Purple, sampled from the launcher icon. The four values are one palette: accent and container are
-    // the light/dark pair, and the two "on" colours must stay legible on them.
-    override val brandAccent = 0xFF6E2593
+    // Vice City neon pink/magenta.
+    override val brandAccent = 0xFFD81B7A
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFE8DDEE
-    override val brandOnAccentContainer = 0xFF220B2D
+    override val brandAccentContainer = 0xFFFFD8E8
+    override val brandOnAccentContainer = 0xFF3D0022
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // GTA VI wallpapers carry no `launchYear` field, and Firestore's orderBy drops

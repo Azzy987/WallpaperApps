@@ -11,12 +11,13 @@ object Xiaomi17UltraSpec : AppSpec {
     override val onboardingTagline = "Your home for official Xiaomi wallpapers."
     override val deviceFamilyName = "Xiaomi 18 Fold"
 
-    // Red, matching the Xiaomi 18 Fold hero image and launcher icon. The four values are one palette: accent and container are the
-    // light/dark pair, and the two "on" colours must stay legible on top of them.
-    override val brandAccent = 0xFFC62828
+    // Crimson, sampled from the Xiaomi 18 Fold hero image. Deliberately shifted off
+    // OnePlus red (#C62828): the artwork's dominant hue is ~350 rather than pure red,
+    // and two apps sharing one brand colour makes them look like the same app.
+    override val brandAccent = 0xFFB00F36
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDAD6
-    override val brandOnAccentContainer = 0xFF410002
+    override val brandAccentContainer = 0xFFFFD9DE
+    override val brandOnAccentContainer = 0xFF3F0011
 
     // ── Firestore ───────────────────────────────────────────────────────────
     override val supportsSeriesFilter = true
