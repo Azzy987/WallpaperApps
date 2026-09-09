@@ -5,11 +5,11 @@ import com.droidates.wallpapers.core.config.AppSpec
 /** Everything unique to iPhone 17 Wallpapers. All screens and logic come from `:core`. */
 object IPhone17Spec : AppSpec {
 
-    override val appName = "iPhone 17 Wallpapers"
-    override val toolbarTitle = "IPHONE 17 WALLPAPERS"
+    override val appName = "iPhone 18 Wallpapers"
+    override val toolbarTitle = "IPHONE 18 WALLPAPERS"
     override val homeSectionTitle = "Official iPhone Drops"
     override val onboardingTagline = "Your home for official Apple & iPhone wallpapers."
-    override val deviceFamilyName = "iPhone 17"
+    override val deviceFamilyName = "iPhone 18"
 
     override val brandAccent = 0xFFBF5000
     override val brandOnAccent = 0xFFFFFFFF

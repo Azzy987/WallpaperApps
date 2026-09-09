@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions, FileProvider and shared meta-data merge in from :core. -->
+    <!-- Permissions, FileProvider and shared metadata merge in from :core. -->
 
     <application
         android:name="com.droidates.redminote8wallpapers.WallpaperApp"
