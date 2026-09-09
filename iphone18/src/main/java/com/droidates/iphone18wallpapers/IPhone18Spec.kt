@@ -17,15 +17,12 @@ object IPhone18Spec : AppSpec {
     override val onboardingTagline = "Your home for official Apple & iPhone wallpapers."
     override val deviceFamilyName = "iPhone Duo"
 
-    // Original Droidates orange accent.
-    // Material Blue. The four values are one palette, not independent colours: accent
-    // and container are the light/dark pair, and the two "on" colours must stay legible
-    // on top of them — so changing the accent alone would leave dark-orange text sitting
-    // on a blue container.
-    override val brandAccent = 0xFF1976D2          // Blue 700
+    // Midnight blue. The four values are one palette: accent and container are the
+    // light/dark pair, and the two "on" colours must stay legible on top of them.
+    override val brandAccent = 0xFF191970          // Midnight Blue
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFD1E4FF // light blue surface
-    override val brandOnAccentContainer = 0xFF001C38
+    override val brandAccentContainer = 0xFFD6E3FF
+    override val brandOnAccentContainer = 0xFF001B3D
 
     // ── Firestore ───────────────────────────────────────────────────────────
     // Apple-brand wallpapers, shared with the other iPhone/iOS apps.
