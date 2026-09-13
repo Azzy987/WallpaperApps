@@ -42,8 +42,8 @@ android {
         applicationId = "com.droidates.redminote8wallpapers"
         minSdk = 28
         targetSdk = 36
-        versionCode = 5
-        versionName = "2.0"
+        versionCode = 6
+        versionName = "1.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
     }

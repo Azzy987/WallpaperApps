@@ -41,7 +41,9 @@ object RedmiSpec : AppSpec {
     override val seriesPrefixRanges = listOf("Redmi" to "Redmj")
 
     override val documentBannersApp = "RedmiWallpapers"
-    override val collectionBannersSub = "Redmi17ProMaxBanners"
+    // Firestore path, not a display name: the documents live under Redmi17Banners,
+    // so this does NOT follow the app's "Redmi 17 Pro Max" naming.
+    override val collectionBannersSub = "Redmi17Banners"
     override val documentUsersApp = "RedmiWallpapers"
     override val collectionUsersSub = "Redmi17ProMaxAndroidUsers"
     override val documentAppUpdate = "Redmi17ProMaxWallpapers"
