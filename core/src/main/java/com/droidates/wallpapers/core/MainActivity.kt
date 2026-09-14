@@ -236,6 +236,13 @@ class MainActivity : ComponentActivity() {
         // Outside those regions UMP reports NOT_REQUIRED and this is a no-op, so it adds
         // nothing to startup for most traffic. It never blocks the UI — the callback only
         // nudges ad initialization once the choice settles.
+        //
+        // This ordering is load-bearing for mediation, not just an optimisation. Bidding
+        // adapters (Meta, Unity) are initialized *inside* MobileAds.initialize() and read
+        // the stored consent string at that moment. Initializing ads before consent
+        // resolves would hand every mediation partner a missing signal — a compliance
+        // problem in the EEA/UK, and partners that simply decline to bid everywhere else.
+        // Do not hoist MobileAdsInitializer out of this callback.
         ConsentManager.gather(this) {
             lifecycleScope.launch {
                 if (ConsentManager.canRequestAds(applicationContext)) {

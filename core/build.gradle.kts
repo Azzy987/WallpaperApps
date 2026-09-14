@@ -90,6 +90,18 @@ dependencies {
     // Consent gathering for EEA/UK; see ConsentManager.
     api(libs.user.messaging.platform)
 
+    // Bidding mediation. These must be compiled into the APK: the AdMob console decides
+    // which partners may bid, but the SDK can only include a partner in the auction if
+    // its adapter classes are actually on the classpath. Enabling a partner in the
+    // console alone does nothing.
+    //
+    // Unity needs its own SDK alongside the adapter; Meta's adapter bundles the Audience
+    // Network SDK itself. The legacy play-services-ads both would drag in is excluded in
+    // the root build file.
+    api(libs.mediation.meta)
+    api(libs.mediation.unity)
+    api(libs.unity.ads)
+
     api(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     api(libs.androidx.hilt.navigation.compose)

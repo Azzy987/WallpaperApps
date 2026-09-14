@@ -67,10 +67,14 @@ object MobileAdsInitializer {
                 // noise; release builds on real devices are silent.
                 val requestConfiguration = RequestConfiguration.Builder().build()
 
+                // Mediation adapter initialization is deliberately left ON. Bidding
+                // adapters must be initialized by the SDK before they can take part in the
+                // auction, so disabling discovery here silently excludes every mediation
+                // partner no matter how the AdMob console is configured. Discovery costs
+                // nothing measurable when no adapters are on the classpath, so this stays
+                // enabled whether or not a given app currently bundles any.
                 val config = InitializationConfig.Builder(AppConfig.ADMOB_APP_ID)
                     .setRequestConfiguration(requestConfiguration)
-                    // No mediation adapters are bundled, so skip discovering them.
-                    .disableMediationAdapterInitialization()
                     .build()
 
                 suspendCancellableCoroutine { continuation ->

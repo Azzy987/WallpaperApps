@@ -24,6 +24,7 @@ import com.droidates.wallpapers.core.utils.findActivity
 import com.google.android.libraries.ads.mobile.sdk.banner.AdSize
 import com.google.android.libraries.ads.mobile.sdk.banner.AdView
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
+import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRefreshCallback
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
@@ -31,10 +32,19 @@ import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
 /**
  * Anchored adaptive banner, hidden for premium users.
  *
- * GMA Next-Gen shape: the ad unit id and size go into [BannerAdRequest], and the loaded
- * [BannerAd] is registered into an [AdView] container — rather than the old
- * `AdView.adUnitId = …` + `setAdSize()` + `loadAd()` sequence. Registering needs an
- * Activity, so the view collapses to zero height if none is available.
+ * Loads through [AdView.loadAd] rather than the standalone `BannerAd.load()` +
+ * `registerBannerAd()` pair. That distinction is the whole reason auto-refresh works:
+ * `loadAd` hands the request to the view that will host it, so the SDK owns the ad's
+ * refresh cycle and honours the refresh rate configured on the ad unit in the AdMob UI.
+ * Loading the ad detached and registering it afterwards leaves the SDK with no view to
+ * drive, and the ad never refreshes no matter what the console says.
+ *
+ * Refresh costs no main-thread work of ours: the SDK swaps the creative inside the
+ * existing WebView on its own schedule, the view's measured height never changes (the
+ * size is fixed at request time), and no recomposition is triggered — [onAdRefreshed]
+ * deliberately touches no Compose state. The one thing we do own is making sure a
+ * backgrounded screen isn't burning refreshes, which the [DisposableEffect] below
+ * handles by pausing the view off-screen.
  */
 @Composable
 fun BannerAd(
@@ -68,7 +78,7 @@ fun BannerAd(
             with(density) { adSize.getHeightInPixels(context).toDp() }
         }
 
-        // Holds the container so the load effect below can attach the ad once it arrives.
+        // Holds the container so the load effect below can drive it once it exists.
         val adViewRef = remember { mutableStateOf<AdView?>(null) }
         val adView = adViewRef.value
 
@@ -79,8 +89,7 @@ fun BannerAd(
         // banner almost always beats it.
         LaunchedEffect(adView, adUnitId, adSize) {
             val view = adView ?: return@LaunchedEffect
-            val activity = view.context.findActivity()
-            if (activity == null) {
+            if (view.context.findActivity() == null) {
                 adFailed = true
                 return@LaunchedEffect
             }
@@ -88,35 +97,54 @@ fun BannerAd(
             MobileAdsInitializer.ensureInitialized(view.context.applicationContext)
 
             val request = BannerAdRequest.Builder(adUnitId, adSize).build()
-            BannerAd.load(
-                request,
-                object : AdLoadCallback<BannerAd> {
-                    override fun onAdLoaded(ad: BannerAd) {
-                        // Callbacks arrive on a background dispatcher — unlike the old
-                        // main-thread AdListener. registerBannerAd() attaches a WebView to
-                        // the hierarchy, so calling it here crashes with
-                        // "Calling View methods on another thread than the UI thread".
-                        view.post {
-                            view.registerBannerAd(ad, activity)
-                            isAdLoaded = true
-                        }
-                    }
+            // loadAd() must run on the UI thread — it attaches the ad's WebView to this
+            // view as soon as the load resolves.
+            view.post {
+                view.loadAd(
+                    request,
+                    object : AdLoadCallback<BannerAd> {
+                        override fun onAdLoaded(ad: BannerAd) {
+                            // Callbacks arrive on a background dispatcher, unlike the old
+                            // main-thread AdListener, and this one flips Compose state.
+                            view.post { isAdLoaded = true }
 
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        view.post {
-                            isAdLoaded = false
-                            adFailed = true
+                            // Refresh happens inside the SDK; this callback exists only so
+                            // a failed refresh doesn't silently leave a blank slot. It
+                            // must stay free of Compose state writes — a refresh every 60s
+                            // that recomposed the screen would be exactly the jank this
+                            // implementation is meant to avoid.
+                            ad.bannerAdRefreshCallback = object : BannerAdRefreshCallback {
+                                override fun onAdFailedToRefresh(error: LoadAdError) {
+                                    // Keep the currently displayed creative and the
+                                    // reserved height. The SDK retries on its own cadence,
+                                    // so collapsing here would make the layout jump for a
+                                    // transient network blip.
+                                }
+                            }
+                        }
+
+                        override fun onAdFailedToLoad(adError: LoadAdError) {
+                            view.post {
+                                isAdLoaded = false
+                                adFailed = true
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
 
+        // No lifecycle pause/resume hook is wired here on purpose. This SDK's AdView
+        // exposes no pause/resume/visibility API (only load, resize, register, destroy) —
+        // it tracks on-screen visibility itself and, per the ad unit refresh contract,
+        // only refreshes while the banner is actually visible. A backgrounded screen
+        // therefore stops refreshing without our help, and calling the inherited View
+        // visibility methods by hand would do nothing but look like it worked.
         AndroidView(
-            // The view must already have its full height when registerBannerAd() runs, or
-            // the SDK logs "Not enough space to show the full ad … only have 426x0 dp" and
-            // renders nothing. Reserve the height as soon as an ad is on its way, and only
-            // collapse back to 0 if the load actually fails.
+            // The view must already have its full height when the ad attaches, or the SDK
+            // logs "Not enough space to show the full ad … only have 426x0 dp" and renders
+            // nothing. Reserve the height as soon as an ad is on its way, and only collapse
+            // back to 0 if the load actually fails.
             modifier = Modifier
                 .fillMaxWidth()
                 .height(if (adFailed) 0.dp else adHeight),

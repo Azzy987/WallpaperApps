@@ -541,11 +541,12 @@ class AdManager @Inject constructor(
     }
 
     fun getAdFrequency(): Int {
-        // One interstitial per 8 detail views. Browsing a wallpaper app means opening
-        // many wallpapers per session, so every-5 fired several times in a single sitting
-        // — the interstitial eCPM ($2.04) is a fraction of rewarded ($5.93), so trading
-        // some of that volume for retention and opt-in rewarded views is the better deal.
-        val frequency = 8
+        // One interstitial per 6 detail views. Was 8, chosen when a low interstitial eCPM
+        // ($2.04 against rewarded's $5.93) made the volume not worth the retention cost.
+        // Bidding mediation raises what each interstitial impression is actually worth, so
+        // the trade shifts and a slightly tighter cadence pays for itself. Still well clear
+        // of every-5, which fired several times in a single browsing run.
+        val frequency = 6
         
         // Only log when the value changes to reduce log spam
         if (lastFrequencyValue != frequency) {

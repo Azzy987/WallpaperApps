@@ -12,7 +12,7 @@ plugins {
 
 // Signing details live in <module>/keystore.properties (git-ignored) so passwords
 // never enter source control. See NEW_APP_GUIDE.md.
-val keystorePropsFile = rootProject.file("redmi/keystore.properties")
+val keystorePropsFile = rootProject.file("oneplus15/keystore.properties")
 val keystoreProps = Properties()
 keystorePropsFile.takeIf { it.exists() }?.let { f ->
     f.inputStream().use { keystoreProps.load(it) }
@@ -35,15 +35,15 @@ if (sharedGoogleServices.exists()) {
 }
 
 android {
-    namespace = "com.droidates.redminote8wallpapers"
+    namespace = "com.droidates.oneplus15wallpapers"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.droidates.redminote8wallpapers"
+        applicationId = "com.droidates.oneplus15wallpapers"
         minSdk = 28
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.8"
+        versionCode = 6
+        versionName = "1.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
     }
