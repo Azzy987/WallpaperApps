@@ -11,12 +11,13 @@ object OnePlus15Spec : AppSpec {
     override val onboardingTagline = "Your home for official OnePlus wallpapers."
     override val deviceFamilyName = "OnePlus 15"
 
-    // TODO(release): set to match the launcher icon / onboarding artwork. Placeholder
-    // is OnePlus red, shifted off :oneplus7's #C62828 so the two apps are not identical.
-    override val brandAccent = 0xFFB71C1C
+    // Lavender, anchored to the onboarding artwork's dominant hue (~270). The four
+    // values are one palette: accent and container are the light/dark pair, and the
+    // two "on" colours must stay legible on top of them.
+    override val brandAccent = 0xFF6A4BA8
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFDAD5
-    override val brandOnAccentContainer = 0xFF410001
+    override val brandAccentContainer = 0xFFE9DDFF
+    override val brandOnAccentContainer = 0xFF22005D
 
     override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
@@ -54,13 +55,14 @@ object OnePlus15Spec : AppSpec {
     override val billingLifetimeFallbackPrice = "₹199"
     override val billingLifetimeComparePrice = "₹299"
 
-    // TODO(release): replace with this app's own AdMob ids before publishing.
-    // These are Google's public TEST ids and earn nothing;
-    // tools/check_release_ready.py fails while they are here, so they cannot ship.
-    override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
-    override val adBannerId = "ca-app-pub-3940256099942544/6300978111"
-    override val adInterstitialId = "ca-app-pub-3940256099942544/1033173712"
-    override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
+    // Must match APPLICATION_ID in this module's AndroidManifest.xml.
+    //
+    // The account also has a oneplus15_native unit; :core has no native placement and
+    // AppSpec has no field for one, so it is deliberately unused.
+    override val adMobAppId = "ca-app-pub-6427410984085546~8091849913"
+    override val adBannerId = "ca-app-pub-6427410984085546/5328534590"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/5998386656"
+    override val adRewardedId = "ca-app-pub-6427410984085546/5994517222"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG
