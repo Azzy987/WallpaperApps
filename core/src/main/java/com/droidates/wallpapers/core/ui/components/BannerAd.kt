@@ -1,5 +1,6 @@
 package com.droidates.wallpapers.core.ui.components
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,10 +42,15 @@ import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError
  *
  * Refresh costs no main-thread work of ours: the SDK swaps the creative inside the
  * existing WebView on its own schedule, the view's measured height never changes (the
- * size is fixed at request time), and no recomposition is triggered — [onAdRefreshed]
- * deliberately touches no Compose state. The one thing we do own is making sure a
- * backgrounded screen isn't burning refreshes, which the [DisposableEffect] below
- * handles by pausing the view off-screen.
+ * size is fixed at request time), and no recomposition is triggered — the refresh
+ * callback deliberately touches no Compose state.
+ *
+ * The request asks for a **collapsible** banner. The first fill may render expanded with
+ * a close button that collapses it back to the anchored size, which lifts CPM because the
+ * larger creative is worth more. Three properties make this safe to enable blindly:
+ * collapsing is always the user's own tap, the collapsed state is the same height this
+ * slot already reserves, and the SDK deliberately drops the collapsible flag on every
+ * auto-refresh after the first — so a user browsing one screen is never re-expanded on.
  */
 @Composable
 fun BannerAd(
@@ -96,7 +102,16 @@ fun BannerAd(
 
             MobileAdsInitializer.ensureInitialized(view.context.applicationContext)
 
-            val request = BannerAdRequest.Builder(adUnitId, adSize).build()
+            // "bottom" anchors the expanded creative to the bottom edge, matching where
+            // both callers pin this composable. Using "top" here would have the ad expand
+            // upward away from its own slot and overlay the content the user is browsing.
+            //
+            // Google demand only: a mediated fill (Meta, Unity) ignores the flag and
+            // renders a standard banner, which is the normal outcome and not an error.
+            val collapsibleExtras = Bundle().apply { putString("collapsible", "bottom") }
+            val request = BannerAdRequest.Builder(adUnitId, adSize)
+                .setGoogleExtrasBundle(collapsibleExtras)
+                .build()
             // loadAd() must run on the UI thread — it attaches the ad's WebView to this
             // view as soon as the load resolves.
             view.post {
