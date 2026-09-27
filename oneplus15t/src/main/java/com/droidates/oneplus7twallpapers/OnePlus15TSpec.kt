@@ -17,12 +17,14 @@ object OnePlus15TSpec : AppSpec {
     override val onboardingTagline = "Your home for official OnePlus wallpapers."
     override val deviceFamilyName = "OnePlus 15T"
 
-    // TODO(release): set to match the launcher icon / onboarding artwork. Placeholder is
-    // shifted off :oneplus7's #C62828 and :oneplus15's #6A4BA8 so no two apps collide.
-    override val brandAccent = 0xFF8E1F3D
+    // Green, sampled from the launcher icon (dominant hue ~95). Distinct from
+    // :redmi's #2E7D32 so no two apps share a brand colour. The four values are one
+    // palette: accent and container are the light/dark pair, and the two "on"
+    // colours must stay legible on top of them.
+    override val brandAccent = 0xFF416F20
     override val brandOnAccent = 0xFFFFFFFF
-    override val brandAccentContainer = 0xFFFFD9DF
-    override val brandOnAccentContainer = 0xFF3B0012
+    override val brandAccentContainer = 0xFFE4F1DA
+    override val brandOnAccentContainer = 0xFF142707
 
     override val supportsSeriesFilter = true
     override val supportsLaunchYearSort = true
