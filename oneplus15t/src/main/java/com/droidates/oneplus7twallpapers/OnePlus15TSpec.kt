@@ -59,14 +59,16 @@ object OnePlus15TSpec : AppSpec {
     override val billingLifetimeFallbackPrice = "₹199"
     override val billingLifetimeComparePrice = "₹299"
 
-    // TODO(release): replace with this app's own AdMob ids before publishing.
-    // The legacy :app flavour used app id ca-app-pub-6427410984085546~7395873201 — reuse
-    // it only if that AdMob app still exists and belongs to this package.
-    // These are Google's public TEST ids and earn nothing;
-    // tools/check_release_ready.py fails while they are here, so they cannot ship.
-    override val adMobAppId = "ca-app-pub-3940256099942544~3347511713"
-    override val adBannerId = "ca-app-pub-3940256099942544/6300978111"
-    override val adInterstitialId = "ca-app-pub-3940256099942544/1033173712"
+    // Must match APPLICATION_ID in this module's AndroidManifest.xml.
+    //
+    // The account also has a OnePlus7T_native unit; :core has no native placement and
+    // AppSpec has no field for one, so it is deliberately unused.
+    override val adMobAppId = "ca-app-pub-6427410984085546~7395873201"
+    override val adBannerId = "ca-app-pub-6427410984085546/2983342781"
+    override val adInterstitialId = "ca-app-pub-6427410984085546/9067922805"
+    // TODO(release): STILL A TEST ID. The oneplus7T_reward unit's id was cut off when the
+    // others were supplied, so this one is unverified — rewarded is the highest-eCPM
+    // format in the app and this earns nothing until it is replaced.
     override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
 
     // ── Build info ──────────────────────────────────────────────────────────
