@@ -66,10 +66,7 @@ object OnePlus15TSpec : AppSpec {
     override val adMobAppId = "ca-app-pub-6427410984085546~7395873201"
     override val adBannerId = "ca-app-pub-6427410984085546/2983342781"
     override val adInterstitialId = "ca-app-pub-6427410984085546/9067922805"
-    // TODO(release): STILL A TEST ID. The oneplus7T_reward unit's id was cut off when the
-    // others were supplied, so this one is unverified — rewarded is the highest-eCPM
-    // format in the app and this earns nothing until it is replaced.
-    override val adRewardedId = "ca-app-pub-3940256099942544/5224354917"
+    override val adRewardedId = "ca-app-pub-6427410984085546/5917797356"
 
     // ── Build info ──────────────────────────────────────────────────────────
     override val isDebug = BuildConfig.DEBUG
